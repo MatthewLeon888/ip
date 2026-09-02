@@ -8,30 +8,32 @@ public class Main {
         System.out.println(drPijon.banner);
         System.out.println(drPijon.greet);
 
-        // Level 1: Echo
         String[] list = new String[100];
-        String line;
+        String inputLine;
         Scanner in = new Scanner(System.in);
 
         while (true) {
-            line = in.nextLine();
-            if (line.equals("bye")) {
+            inputLine = in.nextLine();
+
+            if (inputLine.equals("bye")) {
                 System.out.println(drPijon.goodbye);
                 break;
-            }
-            if (line.equals("list")) {
+            } else if (inputLine.equals("list")) {
                 printList(list);
+            } else {
+                list[listSize] = inputLine;
+                listSize++;
+                System.out.println("added: " + inputLine);
             }
-
-            System.out.println(line);
+            System.out.println(LINE);
         }
-        // Level 1: Echo
-
     }
 
+    public static int listSize = 0;
+
     public static void printList(String[] list) {
-        for (String item : list) {
-            System.out.println(item);
+        for (int i = 0; i < listSize; i++) {
+            System.out.println(String.format("%d. %s", i+1, list[i]));
         }
     }
 }
