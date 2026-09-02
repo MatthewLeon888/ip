@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class DrPijon {
     public static void main(String[] args) {
         String banner = """
@@ -78,6 +80,16 @@ public class DrPijon {
 
         System.out.println(banner);
         System.out.println(greet);
+
+        // Level 1: Echo
+        String line = "";
+        Scanner in = new Scanner(System.in);
+
+        while (!(line = in.nextLine()).equals("bye")) {
+            System.out.println(line);
+        }
+        // Level 1: Echo
+
         System.out.println(goodbye);
     }
 }
