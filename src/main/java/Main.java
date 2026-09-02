@@ -23,15 +23,9 @@ public class Main {
             } else if (words[0].equals("list")) {
                 printList(todoList);
             } else if (words[0].equals("mark")) {
-                int markingIndex = Integer.parseInt(words[1]) - 1;
-                todoList[markingIndex].setDone(true);
-                System.out.println("COO COO! Task marked as COMPLETE:");
-                printList(todoList);
+                markList(words, todoList, true, "COO COO! Task marked as COMPLETE:");
             } else if (words[0].equals("unmark")) {
-                int unmarkingIndex = Integer.parseInt(words[1]) - 1;
-                todoList[unmarkingIndex].setDone(false);
-                System.out.println("COO COO! Task unmarked:");
-                printList(todoList);
+                markList(words, todoList, false, "COO COO! Task unmarked:");
             } else {
                 todoList[listSize] = new Todo(inputLine);
                 listSize++;
@@ -39,6 +33,13 @@ public class Main {
             }
             System.out.println(LINE);
         }
+    }
+
+    private static void markList(String[] words, Todo[] todoList, boolean done, String x) {
+        int markingIndex = Integer.parseInt(words[1]) - 1;
+        todoList[markingIndex].setDone(done);
+        System.out.println(x);
+        printList(todoList);
     }
 
     public static int listSize = 0;
