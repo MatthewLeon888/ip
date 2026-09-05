@@ -40,23 +40,25 @@ public class Main {
             } else if (command.equals("todo") && !taskDescription.isEmpty()) {
                 tasks[taskCount] = new Todo(taskDescription);
                 taskCount++;
-                System.out.println("HMMMMMMMMM ok, Todo added: " + taskDescription);
+                System.out.println("HMMMMMMMMM ok, Todo added:");
+                System.out.println(String.format("  [T][ ] %s", taskDescription));
                 System.out.println(String.format("Now you have %d tasks in the list.", taskCount));
             } else if (command.equals("deadline") && !taskDescription.isEmpty()) {
-                tasks[taskCount] = new Deadline(taskDescription, "placeholder1");
+                String[] deadlineDescription = taskDescription.split("/by", 2);
+                tasks[taskCount] = new Deadline(deadlineDescription[0].trim(), deadlineDescription[1].trim());
                 taskCount++;
-                System.out.println("HMMMMMMMMM ok, Deadline added: " + taskDescription);
+                System.out.println("HMMMMMMMMM ok, Deadline added:");
+                System.out.println(String.format("  [D][ ] %s (by: %s)", deadlineDescription[0].trim(), deadlineDescription[1].trim()));
                 System.out.println(String.format("Now you have %d tasks in the list.", taskCount));
             } else if (command.equals("event") && !taskDescription.isEmpty()) {
-                tasks[taskCount] = new Event(taskDescription, "placeholder1", "placeholder2");
+                String[] eventDescription = taskDescription.split("/from|/to", 3);
+                tasks[taskCount] = new Event(eventDescription[0].trim(), eventDescription[1].trim(), eventDescription[2].trim());
                 taskCount++;
-                System.out.println("HMMMMMMMMM ok, Event added: " + taskDescription);
+                System.out.println("HMMMMMMMMM ok, Event added:");
+                System.out.println(String.format("  [E][ ] %s (from: %s to: %s)", eventDescription[0].trim(), eventDescription[1].trim(), eventDescription[2].trim()));
                 System.out.println(String.format("Now you have %d tasks in the list.", taskCount));
             } else {
-                tasks[taskCount] = new Task(inputLine);
-                taskCount++;
-                System.out.println("added: " + inputLine);
-                System.out.println(String.format("Now you have %d tasks in the list.", taskCount));
+                System.out.println("Invalid input >:(");
             }
             System.out.println(LINE_SEPARATOR);
         }
