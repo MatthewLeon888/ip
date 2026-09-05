@@ -16,4 +16,9 @@ public class Todo extends Task {
         String status = this.isDone() ? "Yes" : "No";
         return super.toString() + System.lineSeparator() + "is done? " + status;
     }
+
+    @Override
+    public char getTaskType() {
+        return 'T';
+    }
 }

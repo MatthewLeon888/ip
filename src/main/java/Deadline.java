@@ -12,7 +12,7 @@ public class Deadline extends Task {
      */
     public Deadline(String description, String by) {
         super(description);
-        this.by = by;
+        setBy(by);
     }
 
     public void setBy(String by) {
@@ -26,5 +26,10 @@ public class Deadline extends Task {
     @Override
     public String toString() {
         return super.toString() + System.lineSeparator() + "do by: " + by;
+    }
+
+    @Override
+    public char getTaskType() {
+        return 'D';
     }
 }

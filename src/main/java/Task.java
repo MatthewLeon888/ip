@@ -41,4 +41,8 @@ public class Task {
     public String toString() {
         return "description: " + description;
     }
+
+    public char getTaskType() {
+        return ' ';
+    }
 }
