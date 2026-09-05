@@ -56,7 +56,7 @@ public class Main {
         Event event = new Event(eventDescription[0].trim(), eventDescription[1].trim(), eventDescription[2].trim());
         tasks.add(event);
         System.out.println("HMMMMMMMMM ok, Event added:");
-        System.out.println(String.format("  [E][ ] %s (from: %s to: %s)", event.getDescription(), event.getTo(), event.getTo()));
+        System.out.println(String.format("  [E][ ] %s (from: %s to: %s)", event.getDescription(), event.getFrom(), event.getTo()));
         System.out.println(String.format("Now you have %d tasks in the list.", tasks.size()));
     }
 
