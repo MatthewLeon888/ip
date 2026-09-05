@@ -23,9 +23,9 @@ public class Main {
             } else if (words[0].equals("list")) {
                 printList(todoList);
             } else if (words[0].equals("mark")) {
-                markList(words, todoList, true, "COO COO! Task marked as COMPLETE:");
+                updateTaskStatus(words, todoList, true, "COO COO! Task marked as COMPLETE:");
             } else if (words[0].equals("unmark")) {
-                markList(words, todoList, false, "COO COO! Task unmarked:");
+                updateTaskStatus(words, todoList, false, "COO COO! Task unmarked:");
             } else {
                 todoList[listSize] = new Todo(inputLine);
                 listSize++;
@@ -35,11 +35,39 @@ public class Main {
         }
     }
 
-    private static void markList(String[] words, Todo[] todoList, boolean done, String x) {
-        int markingIndex = Integer.parseInt(words[1]) - 1;
-        todoList[markingIndex].setDone(done);
-        System.out.println(x);
-        printList(todoList);
+    /**
+     * Updates a task's done status and prints the updated task.
+     *
+     * @param commandParts command and task number entered by the user
+     * @param tasks stored tasks
+     * @param newDoneStatus done status to apply
+     * @param confirmationMessage message printed after a successful update
+     */
+    private static void updateTaskStatus(String[] commandParts, Todo[] tasks,
+            boolean newDoneStatus, String confirmationMessage) {
+        if (commandParts.length < 2) {
+            System.out.println("Please specify a task number.");
+            return;
+        }
+
+        int taskNumber;
+        try {
+            taskNumber = Integer.parseInt(commandParts[1]);
+        } catch (NumberFormatException e) {
+            System.out.println("Please specify a valid task number.");
+            return;
+        }
+
+        if (taskNumber < 1 || taskNumber > listSize || tasks[taskNumber - 1] == null) {
+            System.out.println("That task number does not exist.");
+            return;
+        }
+
+        Todo selectedTask = tasks[taskNumber - 1];
+        selectedTask.setDone(newDoneStatus);
+        System.out.println(confirmationMessage);
+        char marker = selectedTask.isDone() ? 'X' : ' ';
+        System.out.println(String.format("%d. [%c] %s", taskNumber, marker, selectedTask.getDescription()));
     }
 
     public static int listSize = 0;
