@@ -1,15 +1,14 @@
 package drpijon;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
  * Runs the Dr. Pijon command-line task manager.
  */
 public class Main {
-    private static final int MAX_TASKS = 100;
     private static final String LINE_SEPARATOR = "____________________________________________________________";
-
-    private static int taskCount = 0;
 
     /**
      * Starts the Dr. Pijon application and processes commands until the user exits.
@@ -18,7 +17,7 @@ public class Main {
      */
     public static void main(String[] args) {
         DrPijon drPijon = new DrPijon();
-        Task[] tasks = new Task[MAX_TASKS];
+        List<Task> tasks = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
 
         System.out.println(drPijon.getBanner());
@@ -52,33 +51,30 @@ public class Main {
         }
     }
 
-    private static void createEventTask(String taskDescription, Task[] tasks) {
+    private static void createEventTask(String taskDescription, List<Task> tasks) {
         String[] eventDescription = taskDescription.split("/from|/to", 3);
         Event event = new Event(eventDescription[0].trim(), eventDescription[1].trim(), eventDescription[2].trim());
-        tasks[taskCount] = event;
-        taskCount++;
+        tasks.add(event);
         System.out.println("HMMMMMMMMM ok, Event added:");
         System.out.println(String.format("  [E][ ] %s (from: %s to: %s)", event.getDescription(), event.getTo(), event.getTo()));
-        System.out.println(String.format("Now you have %d tasks in the list.", taskCount));
+        System.out.println(String.format("Now you have %d tasks in the list.", tasks.size()));
     }
 
-    private static void createDeadlineTask(String taskDescription, Task[] tasks) {
+    private static void createDeadlineTask(String taskDescription, List<Task> tasks) {
         String[] deadlineDescription = taskDescription.split("/by", 2);
         Deadline deadline = new Deadline(deadlineDescription[0].trim(), deadlineDescription[1].trim());
-        tasks[taskCount] = deadline;
-        taskCount++;
+        tasks.add(deadline);
         System.out.println("HMMMMMMMMM ok, Deadline added:");
         System.out.println(String.format("  [D][ ] %s (by: %s)", deadline.getDescription(), deadline.getBy()));
-        System.out.println(String.format("Now you have %d tasks in the list.", taskCount));
+        System.out.println(String.format("Now you have %d tasks in the list.", tasks.size()));
     }
 
-    private static void createTodoTask(String taskDescription, Task[] tasks) {
+    private static void createTodoTask(String taskDescription, List<Task> tasks) {
         Todo todo = new Todo(taskDescription);
-        tasks[taskCount] = todo;
-        taskCount++;
+        tasks.add(todo);
         System.out.println("HMMMMMMMMM ok, Todo added:");
         System.out.println(String.format("  [T][ ] %s", taskDescription));
-        System.out.println(String.format("Now you have %d tasks in the list.", taskCount));
+        System.out.println(String.format("Now you have %d tasks in the list.", tasks.size()));
     }
 
     /**
@@ -89,7 +85,7 @@ public class Main {
      * @param newDoneStatus done status to apply
      * @param confirmationMessage message printed after a successful update
      */
-    private static void updateTaskStatus(String[] inputParts, Task[] tasks,
+    private static void updateTaskStatus(String[] inputParts, List<Task> tasks,
                                          boolean newDoneStatus, String confirmationMessage) {
         if (inputParts.length < 2) {
             System.out.println("BOOOOOOOO! please specify a task number.");
@@ -104,12 +100,12 @@ public class Main {
             return;
         }
 
-        if (taskNumber < 1 || taskNumber > taskCount || tasks[taskNumber - 1] == null) {
+        if (taskNumber < 1 || taskNumber > tasks.size()) {
             System.out.println("BOOOOOOOO! That task number does not exist.");
             return;
         }
 
-        Task selectedTask = tasks[taskNumber - 1];
+        Task selectedTask = tasks.get(taskNumber - 1);
         selectedTask.setDone(newDoneStatus);
         System.out.println(confirmationMessage);
         char typeMarker = selectedTask.getTaskType();
@@ -122,12 +118,13 @@ public class Main {
      *
      * @param tasks stored tasks
      */
-    private static void printList(Task[] tasks) {
+    private static void printList(List<Task> tasks) {
         System.out.println("BEHOLD! Yummy list of tasks:");
-        for (int i = 0; i < taskCount; i++) {
-            char typeMarker = tasks[i].getTaskType();
-            char statusMarker = tasks[i].isDone() ? 'X' : ' ';
-            String taskDescription = tasks[i].getDescription();
+        for (int i = 0; i < tasks.size(); i++) {
+            Task task = tasks.get(i);
+            char typeMarker = task.getTaskType();
+            char statusMarker = task.isDone() ? 'X' : ' ';
+            String taskDescription = task.getDescription();
             System.out.println(String.format("%d. [%c][%c] %s", i + 1, typeMarker, statusMarker, taskDescription));
         }
     }
