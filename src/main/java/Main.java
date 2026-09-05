@@ -38,30 +38,45 @@ public class Main {
             } else if (command.equals("unmark")) {
                 updateTaskStatus(inputParts, tasks, false, "COO COO! Task unmarked:");
             } else if (command.equals("todo") && !taskDescription.isEmpty()) {
-                tasks[taskCount] = new Todo(taskDescription);
-                taskCount++;
-                System.out.println("HMMMMMMMMM ok, Todo added:");
-                System.out.println(String.format("  [T][ ] %s", taskDescription));
-                System.out.println(String.format("Now you have %d tasks in the list.", taskCount));
+                createTodoTask(taskDescription, tasks);
             } else if (command.equals("deadline") && !taskDescription.isEmpty()) {
-                String[] deadlineDescription = taskDescription.split("/by", 2);
-                tasks[taskCount] = new Deadline(deadlineDescription[0].trim(), deadlineDescription[1].trim());
-                taskCount++;
-                System.out.println("HMMMMMMMMM ok, Deadline added:");
-                System.out.println(String.format("  [D][ ] %s (by: %s)", deadlineDescription[0].trim(), deadlineDescription[1].trim()));
-                System.out.println(String.format("Now you have %d tasks in the list.", taskCount));
+                createDeadlineTask(taskDescription, tasks);
             } else if (command.equals("event") && !taskDescription.isEmpty()) {
-                String[] eventDescription = taskDescription.split("/from|/to", 3);
-                tasks[taskCount] = new Event(eventDescription[0].trim(), eventDescription[1].trim(), eventDescription[2].trim());
-                taskCount++;
-                System.out.println("HMMMMMMMMM ok, Event added:");
-                System.out.println(String.format("  [E][ ] %s (from: %s to: %s)", eventDescription[0].trim(), eventDescription[1].trim(), eventDescription[2].trim()));
-                System.out.println(String.format("Now you have %d tasks in the list.", taskCount));
+                createEventTask(taskDescription, tasks);
             } else {
                 System.out.println("Invalid input >:(");
             }
             System.out.println(LINE_SEPARATOR);
         }
+    }
+
+    private static void createEventTask(String taskDescription, Task[] tasks) {
+        String[] eventDescription = taskDescription.split("/from|/to", 3);
+        Event event = new Event(eventDescription[0].trim(), eventDescription[1].trim(), eventDescription[2].trim());
+        tasks[taskCount] = event;
+        taskCount++;
+        System.out.println("HMMMMMMMMM ok, Event added:");
+        System.out.println(String.format("  [E][ ] %s (from: %s to: %s)", event.getDescription(), event.getTo(), event.getTo()));
+        System.out.println(String.format("Now you have %d tasks in the list.", taskCount));
+    }
+
+    private static void createDeadlineTask(String taskDescription, Task[] tasks) {
+        String[] deadlineDescription = taskDescription.split("/by", 2);
+        Deadline deadline = new Deadline(deadlineDescription[0].trim(), deadlineDescription[1].trim());
+        tasks[taskCount] = deadline;
+        taskCount++;
+        System.out.println("HMMMMMMMMM ok, Deadline added:");
+        System.out.println(String.format("  [D][ ] %s (by: %s)", deadline.getDescription(), deadline.getBy()));
+        System.out.println(String.format("Now you have %d tasks in the list.", taskCount));
+    }
+
+    private static void createTodoTask(String taskDescription, Task[] tasks) {
+        Todo todo = new Todo(taskDescription);
+        tasks[taskCount] = todo;
+        taskCount++;
+        System.out.println("HMMMMMMMMM ok, Todo added:");
+        System.out.println(String.format("  [T][ ] %s", taskDescription));
+        System.out.println(String.format("Now you have %d tasks in the list.", taskCount));
     }
 
     /**
