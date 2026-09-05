@@ -24,32 +24,78 @@ public class Main {
         System.out.println(drPijon.getBanner());
         System.out.println(drPijon.getGreet());
 
+        runCommandLoop(drPijon, tasks, scanner);
+    }
+
+    /**
+     * Reads and processes commands until the user exits or input ends.
+     *
+     * @param drPijon application messages
+     * @param tasks stored tasks
+     * @param scanner console input
+     */
+    private static void runCommandLoop(DrPijon drPijon, List<Task> tasks, Scanner scanner) {
         while (scanner.hasNextLine()) {
             String inputLine = scanner.nextLine().trim();
-            String[] inputParts = inputLine.split("\\s+", 2);
-            String command = inputParts[0];
-            String taskDescription = (inputParts.length > 1) ? inputParts[1] : "";
-
-            if (command.equals("bye")) {
-                System.out.println(drPijon.getGoodbye());
-                break;
-            } else if (command.equals("list")) {
-                printList(tasks);
-            } else if (command.equals("mark")) {
-                updateTaskStatus(inputParts, tasks, true, "COO COO! Task marked as COMPLETE:");
-            } else if (command.equals("unmark")) {
-                updateTaskStatus(inputParts, tasks, false, "COO COO! Task unmarked:");
-            } else if (command.equals("todo") && !taskDescription.isEmpty()) {
-                createTodoTask(taskDescription, tasks);
-            } else if (command.equals("deadline") && !taskDescription.isEmpty()) {
-                createDeadlineTask(taskDescription, tasks);
-            } else if (command.equals("event") && !taskDescription.isEmpty()) {
-                createEventTask(taskDescription, tasks);
-            } else {
-                System.out.println(INVALID_INPUT_MESSAGE);
+            if (!processCommand(inputLine, drPijon, tasks)) {
+                return;
             }
-            System.out.println(LINE_SEPARATOR);
         }
+    }
+
+    /**
+     * Processes one command and returns whether command processing should continue.
+     *
+     * @param inputLine trimmed command line
+     * @param drPijon application messages
+     * @param tasks stored tasks
+     * @return false when the user requested exit
+     */
+    private static boolean processCommand(String inputLine, DrPijon drPijon, List<Task> tasks) {
+        String[] inputParts = inputLine.split("\\s+", 2);
+        String command = inputParts[0];
+        String taskDescription = (inputParts.length > 1) ? inputParts[1] : "";
+
+        switch (command) {
+        case "bye":
+            System.out.println(drPijon.getGoodbye());
+            return false;
+        case "list":
+            printList(tasks);
+            break;
+        case "mark":
+            updateTaskStatus(inputParts, tasks, true, "COO COO! Task marked as COMPLETE:");
+            break;
+        case "unmark":
+            updateTaskStatus(inputParts, tasks, false, "COO COO! Task unmarked:");
+            break;
+        case "todo":
+            if (taskDescription.isEmpty()) {
+                System.out.println(INVALID_INPUT_MESSAGE);
+            } else {
+                createTodoTask(taskDescription, tasks);
+            }
+            break;
+        case "deadline":
+            if (taskDescription.isEmpty()) {
+                System.out.println(INVALID_INPUT_MESSAGE);
+            } else {
+                createDeadlineTask(taskDescription, tasks);
+            }
+            break;
+        case "event":
+            if (taskDescription.isEmpty()) {
+                System.out.println(INVALID_INPUT_MESSAGE);
+            } else {
+                createEventTask(taskDescription, tasks);
+            }
+            break;
+        default:
+            System.out.println(INVALID_INPUT_MESSAGE);
+            break;
+        }
+        System.out.println(LINE_SEPARATOR);
+        return true;
     }
 
     private static void createEventTask(String taskDescription, List<Task> tasks) {
