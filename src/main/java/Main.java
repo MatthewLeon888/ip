@@ -1,8 +1,10 @@
+package drpijon;
+
+import java.util.Scanner;
+
 /**
  * Runs the Dr. Pijon command-line task manager.
  */
-import java.util.Scanner;
-
 public class Main {
     private static final int MAX_TASKS = 100;
     private static final String LINE_SEPARATOR = "____________________________________________________________";

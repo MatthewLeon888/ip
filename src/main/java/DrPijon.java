@@ -1,3 +1,5 @@
+package drpijon;
+
 /**
  * Stores the banner and messages displayed by the Dr. Pijon application.
  */
