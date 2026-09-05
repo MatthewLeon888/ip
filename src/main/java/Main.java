@@ -16,7 +16,7 @@ public class Main {
      */
     public static void main(String[] args) {
         DrPijon drPijon = new DrPijon();
-        Todo[] tasks = new Todo[MAX_TASKS];
+        Task[] tasks = new Task[MAX_TASKS];
         Scanner scanner = new Scanner(System.in);
 
         System.out.println(drPijon.getBanner());
@@ -53,7 +53,7 @@ public class Main {
      * @param newDoneStatus done status to apply
      * @param confirmationMessage message printed after a successful update
      */
-    private static void updateTaskStatus(String[] commandParts, Todo[] tasks,
+    private static void updateTaskStatus(String[] commandParts, Task[] tasks,
             boolean newDoneStatus, String confirmationMessage) {
         if (commandParts.length < 2) {
             System.out.println("Please specify a task number.");
@@ -73,7 +73,7 @@ public class Main {
             return;
         }
 
-        Todo selectedTask = tasks[taskNumber - 1];
+        Task selectedTask = tasks[taskNumber - 1];
         selectedTask.setDone(newDoneStatus);
         System.out.println(confirmationMessage);
         char marker = selectedTask.isDone() ? 'X' : ' ';
@@ -85,7 +85,7 @@ public class Main {
      *
      * @param tasks stored tasks
      */
-    private static void printList(Todo[] tasks) {
+    private static void printList(Task[] tasks) {
         System.out.println("BEHOLD! Yummy list of tasks:");
         for (int i = 0; i < taskCount; i++) {
             char marker = tasks[i].isDone() ? 'X' : ' ';

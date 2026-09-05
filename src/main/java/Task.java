@@ -3,6 +3,7 @@
  */
 public class Task {
     private final String description;
+    private boolean isDone;
 
     /**
      * Creates a task with the specified description.
@@ -11,10 +12,29 @@ public class Task {
      */
     public Task(String description) {
         this.description = description;
+        this.isDone = false;
     }
 
     public String getDescription() {
         return description;
+    }
+
+    /**
+     * Sets whether this task is done.
+     *
+     * @param isDone whether the task is done
+     */
+    public void setDone(boolean isDone) {
+        this.isDone = isDone;
+    }
+
+    /**
+     * Returns whether this task is done.
+     *
+     * @return true when the task is done
+     */
+    public boolean isDone() {
+        return isDone;
     }
     
     @Override

@@ -1,7 +1,7 @@
 /**
  * Represents a task with a deadline.
  */
-public class Deadline extends Todo {
+public class Deadline extends Task {
     private String by;
 
     /**
