@@ -149,7 +149,7 @@ public class Main {
     private static void updateTaskStatus(String[] inputParts, List<Task> tasks,
                                          boolean newDoneStatus, String confirmationMessage) {
         if (inputParts.length < 2) {
-            System.out.println("BOOOOOOOO! please specify a task number.");
+            System.out.println("BOOOOOOOO! Please specify a task number!");
             return;
         }
 
@@ -157,12 +157,12 @@ public class Main {
         try {
             taskNumber = Integer.parseInt(inputParts[1]);
         } catch (NumberFormatException e) {
-            System.out.println("BOOOOOOOO! Please specify a valid task number.");
+            System.out.println("BOOOOOOOO! Please specify a valid task number!");
             return;
         }
 
         if (taskNumber < 1 || taskNumber > tasks.size()) {
-            System.out.println("BOOOOOOOO! That task number does not exist.");
+            System.out.println("BOOOOOOOO! That task number does not exist!");
             return;
         }
 

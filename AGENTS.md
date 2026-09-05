@@ -28,6 +28,13 @@ All Java code in this project must follow the project-specific `seedu-java-codin
 skill at `.codex/skills/seedu-java-coding-standard/SKILL.md`. Apply it when creating,
 modifying, or reviewing Java source, and preserve behavior while correcting violations.
 
+# UI testing after code updates
+
+After every code update, review `test/ui-test-plan.md` and add or revise test cases when
+the changed behavior requires coverage. Then invoke the project-specific `$test-ui` skill
+using that plan before considering the update complete. Preserve the skill's fail-fast
+behavior and report any actual-versus-expected output mismatch.
+
 # Project-specific requirements
 
 ## Java version:
