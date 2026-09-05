@@ -1,37 +1,47 @@
+/**
+ * Runs the Dr. Pijon command-line task manager.
+ */
 import java.util.Scanner;
 
 public class Main {
+    private static final int MAX_TASKS = 100;
+    private static final String LINE_SEPARATOR = "____________________________________________________________";
+
+    private static int taskCount = 0;
+
+    /**
+     * Starts the Dr. Pijon application and processes commands until the user exits.
+     *
+     * @param args command-line arguments, which are not used
+     */
     public static void main(String[] args) {
         DrPijon drPijon = new DrPijon();
-        String LINE = "____________________________________________________________";
+        Todo[] tasks = new Todo[MAX_TASKS];
+        Scanner scanner = new Scanner(System.in);
 
-        System.out.println(drPijon.banner);
-        System.out.println(drPijon.greet);
+        System.out.println(drPijon.getBanner());
+        System.out.println(drPijon.getGreet());
 
-        Todo[] todoList = new Todo[100];
-        String inputLine;
-        Scanner in = new Scanner(System.in);
+        while (scanner.hasNextLine()) {
+            String inputLine = scanner.nextLine();
+            String[] commandParts = inputLine.split("\\s+");
 
-        while (true) {
-            inputLine = in.nextLine();
-
-            String[] words = inputLine.split("\\s+");
-
-            if (words[0].equals("bye")) {
-                System.out.println(drPijon.goodbye);
+            if (commandParts[0].equals("bye")) {
+                System.out.println(drPijon.getGoodbye());
                 break;
-            } else if (words[0].equals("list")) {
-                printList(todoList);
-            } else if (words[0].equals("mark")) {
-                updateTaskStatus(words, todoList, true, "COO COO! Task marked as COMPLETE:");
-            } else if (words[0].equals("unmark")) {
-                updateTaskStatus(words, todoList, false, "COO COO! Task unmarked:");
+            } else if (commandParts[0].equals("list")) {
+                printList(tasks);
+            } else if (commandParts[0].equals("mark")) {
+                updateTaskStatus(commandParts, tasks, true,
+                        "COO COO! Task marked as COMPLETE:");
+            } else if (commandParts[0].equals("unmark")) {
+                updateTaskStatus(commandParts, tasks, false, "COO COO! Task unmarked:");
             } else {
-                todoList[listSize] = new Todo(inputLine);
-                listSize++;
+                tasks[taskCount] = new Todo(inputLine);
+                taskCount++;
                 System.out.println("added: " + inputLine);
             }
-            System.out.println(LINE);
+            System.out.println(LINE_SEPARATOR);
         }
     }
 
@@ -58,7 +68,7 @@ public class Main {
             return;
         }
 
-        if (taskNumber < 1 || taskNumber > listSize || tasks[taskNumber - 1] == null) {
+        if (taskNumber < 1 || taskNumber > taskCount || tasks[taskNumber - 1] == null) {
             System.out.println("That task number does not exist.");
             return;
         }
@@ -67,19 +77,20 @@ public class Main {
         selectedTask.setDone(newDoneStatus);
         System.out.println(confirmationMessage);
         char marker = selectedTask.isDone() ? 'X' : ' ';
-        System.out.println(String.format("%d. [%c] %s", taskNumber, marker, selectedTask.getDescription()));
+        System.out.println(String.format("  [%c] %s", marker, selectedTask.getDescription()));
     }
 
-    public static int listSize = 0;
-
-    public static void printList(Todo[] list) {
+    /**
+     * Prints all tasks and their current done status.
+     *
+     * @param tasks stored tasks
+     */
+    private static void printList(Todo[] tasks) {
         System.out.println("BEHOLD! Yummy list of tasks:");
-        for (int i = 0; i < listSize; i++) {
-            char marker = ' ';
-            if (list[i].isDone()) {
-                marker = 'X';
-            }
-            System.out.println(String.format("%d. [%c] %s", i+1, marker, list[i].getDescription()));
+        for (int i = 0; i < taskCount; i++) {
+            char marker = tasks[i].isDone() ? 'X' : ' ';
+            System.out.println(String.format("%d. [%c] %s", i + 1, marker,
+                    tasks[i].getDescription()));
         }
     }
 }

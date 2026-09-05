@@ -1,6 +1,15 @@
+/**
+ * Represents a task with a deadline.
+ */
 public class Deadline extends Todo {
     private String by;
 
+    /**
+     * Creates a task with a description and deadline.
+     *
+     * @param description task description
+     * @param by deadline description
+     */
     public Deadline(String description, String by) {
         super(description);
         this.by = by;
@@ -14,6 +23,7 @@ public class Deadline extends Todo {
         return by;
     }
     
+    @Override
     public String toString() {
         return super.toString() + System.lineSeparator() + "do by: " + by;
     }

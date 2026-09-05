@@ -1,5 +1,8 @@
+/**
+ * Stores the banner and messages displayed by the Dr. Pijon application.
+ */
 public class DrPijon {
-    String banner = """
+    private final String banner = """
             @@@@@@@@@@@@@@@@@@%%%%%%%%%%%%%%%%@@%%%%%%%%%%######################################################%%%%%%%%%%%%%%%%
             @@@@@@@@@@@@@@@@@@%%%%%%%%%%@@@@%%%%%%%%%%%%%#%#*+-:::=---=+*#######################################%%%%%%%%%%%%%%%%
             @@@@@@@@@@@@@@@@@@%%%%%%%%%%@@@@%%%%%%%%%%%%-                .:=%###################################%%%%%%%%%%%%%%%%
@@ -66,12 +69,39 @@ public class DrPijon {
                                         /_____/ /_/         /_/     /_/  ___  /  \\____//_/ /_/\s
                                                                          /___/                \s
             """;
-    String greet = """
+    private final String greet = """
             Co-oo! Dr. Pijon at your service
             What are we pecking at today?
             """;
-    String goodbye = """
+    private final String goodbye = """
             I smell bread crumbs! I'm leaving.
             DR PIJON SERVICE END
             """;
+
+    /**
+     * Returns the application banner.
+     *
+     * @return application banner
+     */
+    public String getBanner() {
+        return banner;
+    }
+
+    /**
+     * Returns the greeting message.
+     *
+     * @return greeting message
+     */
+    public String getGreet() {
+        return greet;
+    }
+
+    /**
+     * Returns the goodbye message.
+     *
+     * @return goodbye message
+     */
+    public String getGoodbye() {
+        return goodbye;
+    }
 }
