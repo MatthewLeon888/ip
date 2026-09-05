@@ -8,6 +8,7 @@ import java.util.Scanner;
  * Runs the Dr. Pijon command-line task manager.
  */
 public class Main {
+    private static final String INVALID_INPUT_MESSAGE = "Invalid input >:(";
     private static final String LINE_SEPARATOR = "____________________________________________________________";
 
     /**
@@ -45,15 +46,22 @@ public class Main {
             } else if (command.equals("event") && !taskDescription.isEmpty()) {
                 createEventTask(taskDescription, tasks);
             } else {
-                System.out.println("Invalid input >:(");
+                System.out.println(INVALID_INPUT_MESSAGE);
             }
             System.out.println(LINE_SEPARATOR);
         }
     }
 
     private static void createEventTask(String taskDescription, List<Task> tasks) {
-        String[] eventDescription = taskDescription.split("/from|/to", 3);
-        Event event = new Event(eventDescription[0].trim(), eventDescription[1].trim(), eventDescription[2].trim());
+        String[] eventParts = taskDescription.split("/from|/to", 3);
+        if (eventParts.length < 3 || eventParts[0].isBlank()
+                || eventParts[1].isBlank() || eventParts[2].isBlank()) {
+            System.out.println(INVALID_INPUT_MESSAGE);
+            return;
+        }
+
+        Event event = new Event(
+                eventParts[0].trim(), eventParts[1].trim(), eventParts[2].trim());
         tasks.add(event);
         System.out.println("HMMMMMMMMM ok, Event added:");
         System.out.println(String.format("  [E][ ] %s (from: %s to: %s)", event.getDescription(), event.getFrom(), event.getTo()));
@@ -61,8 +69,13 @@ public class Main {
     }
 
     private static void createDeadlineTask(String taskDescription, List<Task> tasks) {
-        String[] deadlineDescription = taskDescription.split("/by", 2);
-        Deadline deadline = new Deadline(deadlineDescription[0].trim(), deadlineDescription[1].trim());
+        String[] deadlineParts = taskDescription.split("/by", 2);
+        if (deadlineParts.length < 2 || deadlineParts[0].isBlank() || deadlineParts[1].isBlank()) {
+            System.out.println(INVALID_INPUT_MESSAGE);
+            return;
+        }
+
+        Deadline deadline = new Deadline(deadlineParts[0].trim(), deadlineParts[1].trim());
         tasks.add(deadline);
         System.out.println("HMMMMMMMMM ok, Deadline added:");
         System.out.println(String.format("  [D][ ] %s (by: %s)", deadline.getDescription(), deadline.getBy()));
