@@ -85,7 +85,7 @@ public class Main {
             createEventTask(taskDescription, tasks);
             break;
         default:
-            throw new DrPijonException(INVALID_INPUT_MESSAGE);
+            throw new DrPijonException("I DONT KNOW THAT COMMAND. Try: list, todo, deadline, event, mark, unmark, or bye ^w^");
         }
         System.out.println(LINE_SEPARATOR);
         return true;
@@ -94,7 +94,7 @@ public class Main {
     private static void createEventTask(String taskDescription, List<Task> tasks) throws DrPijonException {
         String[] eventParts = taskDescription.split("/from|/to", 3);
         if (eventParts.length < 3 || eventParts[0].isBlank() || eventParts[1].isBlank() || eventParts[2].isBlank()) {
-            throw new DrPijonException(INVALID_INPUT_MESSAGE);
+            throw new DrPijonException("OI EVENT MUST INCLUDE /from AND /to >:( Try: event career fest /from 14 Sep /to 21 Sep");
         }
 
         Event event = new Event(eventParts[0].trim(), eventParts[1].trim(), eventParts[2].trim());
@@ -107,7 +107,7 @@ public class Main {
     private static void createDeadlineTask(String taskDescription, List<Task> tasks) throws DrPijonException {
         String[] deadlineParts = taskDescription.split("/by", 2);
         if (deadlineParts.length < 2 || deadlineParts[0].isBlank() || deadlineParts[1].isBlank()) {
-            throw new DrPijonException(INVALID_INPUT_MESSAGE);
+            throw new DrPijonException("OI DEADLINE MUST INCLUDE /by >:( Try: deadline return book /by Sunday");
         }
 
         Deadline deadline = new Deadline(deadlineParts[0].trim(), deadlineParts[1].trim());
@@ -119,7 +119,7 @@ public class Main {
 
     private static void createTodoTask(String taskDescription, List<Task> tasks) throws DrPijonException {
         if (taskDescription.isBlank()) {
-            throw new DrPijonException(INVALID_INPUT_MESSAGE);
+            throw new DrPijonException("OI TODO DESCRIPTION CANT BE EMPTY >:( Try: todo read book");
         }
 
         Todo todo = new Todo(taskDescription);
@@ -140,18 +140,18 @@ public class Main {
     private static void updateTaskStatus(String[] inputParts, List<Task> tasks,
                                          boolean newDoneStatus, String confirmationMessage) throws DrPijonException {
         if (inputParts.length < 2) {
-            throw new DrPijonException(INVALID_INPUT_MESSAGE);
+            throw new DrPijonException("BOOOOOOOO! Please specify a task number!");
         }
 
         int taskNumber;
         try {
             taskNumber = Integer.parseInt(inputParts[1]);
         } catch (NumberFormatException e) {
-            throw new DrPijonException(INVALID_INPUT_MESSAGE);
+            throw new DrPijonException("BOOOOOOOO! Please specify a valid task number!");
         }
 
         if (taskNumber < 1 || taskNumber > tasks.size()) {
-            throw new DrPijonException(INVALID_INPUT_MESSAGE);
+            throw new DrPijonException("BOOOOOOOO! That task number does not exist!");
         }
 
         Task selectedTask = tasks.get(taskNumber - 1);
