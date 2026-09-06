@@ -1,4 +1,4 @@
-package drpijon;
+package drpijon.exception;
 
 /**
  * Represents an error caused by an invalid Dr. Pijon command.

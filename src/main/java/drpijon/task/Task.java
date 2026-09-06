@@ -1,4 +1,4 @@
-package drpijon;
+package drpijon.task;
 
 /**
  * Represents a task with a textual description.
