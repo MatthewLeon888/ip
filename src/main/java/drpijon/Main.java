@@ -8,7 +8,7 @@ import java.util.Scanner;
  * Runs the Dr. Pijon command-line task manager.
  */
 public class Main {
-    private static final String INVALID_INPUT_MESSAGE = "Invalid input >:(";
+    private static final String INVALID_INPUT_MESSAGE = "Bruhhhhh... Invalid input >:(";
     private static final String LINE_SEPARATOR = "____________________________________________________________";
 
     /**
@@ -37,8 +37,13 @@ public class Main {
     private static void runCommandLoop(DrPijon drPijon, List<Task> tasks, Scanner scanner) {
         while (scanner.hasNextLine()) {
             String inputLine = scanner.nextLine().trim();
-            if (!processCommand(inputLine, drPijon, tasks)) {
-                return;
+            try {
+                if (!processCommand(inputLine, drPijon, tasks)) {
+                    return;
+                }
+            } catch (DrPijonException e) {
+                System.out.println(e.getMessage());
+                System.out.println(LINE_SEPARATOR);
             }
         }
     }
@@ -50,8 +55,9 @@ public class Main {
      * @param drPijon application messages
      * @param tasks stored tasks
      * @return false when the user requested exit
+     * @throws DrPijonException when the command or its arguments are invalid
      */
-    private static boolean processCommand(String inputLine, DrPijon drPijon, List<Task> tasks) {
+    private static boolean processCommand(String inputLine, DrPijon drPijon, List<Task> tasks) throws DrPijonException {
         String[] inputParts = inputLine.split("\\s+", 2);
         String command = inputParts[0];
         String taskDescription = (inputParts.length > 1) ? inputParts[1] : "";
@@ -70,57 +76,38 @@ public class Main {
             updateTaskStatus(inputParts, tasks, false, "COO COO! Task unmarked:");
             break;
         case "todo":
-            if (taskDescription.isEmpty()) {
-                System.out.println(INVALID_INPUT_MESSAGE);
-            } else {
-                createTodoTask(taskDescription, tasks);
-            }
+            createTodoTask(taskDescription, tasks);
             break;
         case "deadline":
-            if (taskDescription.isEmpty()) {
-                System.out.println(INVALID_INPUT_MESSAGE);
-            } else {
-                createDeadlineTask(taskDescription, tasks);
-            }
+            createDeadlineTask(taskDescription, tasks);
             break;
         case "event":
-            if (taskDescription.isEmpty()) {
-                System.out.println(INVALID_INPUT_MESSAGE);
-            } else {
-                createEventTask(taskDescription, tasks);
-            }
+            createEventTask(taskDescription, tasks);
             break;
         default:
-            System.out.println(INVALID_INPUT_MESSAGE);
-            break;
+            throw new DrPijonException(INVALID_INPUT_MESSAGE);
         }
         System.out.println(LINE_SEPARATOR);
         return true;
     }
 
-    private static void createEventTask(String taskDescription, List<Task> tasks) {
+    private static void createEventTask(String taskDescription, List<Task> tasks) throws DrPijonException {
         String[] eventParts = taskDescription.split("/from|/to", 3);
-        if (eventParts.length < 3 || eventParts[0].isBlank()
-                || eventParts[1].isBlank() || eventParts[2].isBlank()) {
-            System.out.println(INVALID_INPUT_MESSAGE);
-            return;
+        if (eventParts.length < 3 || eventParts[0].isBlank() || eventParts[1].isBlank() || eventParts[2].isBlank()) {
+            throw new DrPijonException(INVALID_INPUT_MESSAGE);
         }
 
-        Event event = new Event(
-                eventParts[0].trim(), eventParts[1].trim(), eventParts[2].trim());
+        Event event = new Event(eventParts[0].trim(), eventParts[1].trim(), eventParts[2].trim());
         tasks.add(event);
         System.out.println("HMMMMMMMMM ok, Event added:");
-        System.out.println(String.format(
-                "  [E][ ] %s (from: %s to: %s)",
-                event.getDescription(), event.getFrom(), event.getTo()));
+        System.out.println(String.format("  [E][ ] %s (from: %s to: %s)", event.getDescription(), event.getFrom(), event.getTo()));
         System.out.println(String.format("Now you have %d tasks in the list.", tasks.size()));
     }
 
-    private static void createDeadlineTask(String taskDescription, List<Task> tasks) {
+    private static void createDeadlineTask(String taskDescription, List<Task> tasks) throws DrPijonException {
         String[] deadlineParts = taskDescription.split("/by", 2);
         if (deadlineParts.length < 2 || deadlineParts[0].isBlank() || deadlineParts[1].isBlank()) {
-            System.out.println(INVALID_INPUT_MESSAGE);
-            return;
+            throw new DrPijonException(INVALID_INPUT_MESSAGE);
         }
 
         Deadline deadline = new Deadline(deadlineParts[0].trim(), deadlineParts[1].trim());
@@ -130,12 +117,16 @@ public class Main {
         System.out.println(String.format("Now you have %d tasks in the list.", tasks.size()));
     }
 
-    private static void createTodoTask(String taskDescription, List<Task> tasks) {
+    private static void createTodoTask(String taskDescription, List<Task> tasks) throws DrPijonException {
+        if (taskDescription.isBlank()) {
+            throw new DrPijonException(INVALID_INPUT_MESSAGE);
+        }
+
         Todo todo = new Todo(taskDescription);
         tasks.add(todo);
         System.out.println("HMMMMMMMMM ok, Todo added:");
-        System.out.println(String.format("  [T][ ] %s", taskDescription));
-        System.out.println(String.format("Now you have %d tasks in the list.", tasks.size()));
+        System.out.println(String.format("  [T][ ] %s", todo.getDescription()));
+        System.out.println(String.format("Now you have %d tasks in the list. ^w^", tasks.size()));
     }
 
     /**
@@ -147,23 +138,20 @@ public class Main {
      * @param confirmationMessage message printed after a successful update
      */
     private static void updateTaskStatus(String[] inputParts, List<Task> tasks,
-                                         boolean newDoneStatus, String confirmationMessage) {
+                                         boolean newDoneStatus, String confirmationMessage) throws DrPijonException {
         if (inputParts.length < 2) {
-            System.out.println("BOOOOOOOO! Please specify a task number!");
-            return;
+            throw new DrPijonException(INVALID_INPUT_MESSAGE);
         }
 
         int taskNumber;
         try {
             taskNumber = Integer.parseInt(inputParts[1]);
         } catch (NumberFormatException e) {
-            System.out.println("BOOOOOOOO! Please specify a valid task number!");
-            return;
+            throw new DrPijonException(INVALID_INPUT_MESSAGE);
         }
 
         if (taskNumber < 1 || taskNumber > tasks.size()) {
-            System.out.println("BOOOOOOOO! That task number does not exist!");
-            return;
+            throw new DrPijonException(INVALID_INPUT_MESSAGE);
         }
 
         Task selectedTask = tasks.get(taskNumber - 1);
@@ -180,6 +168,10 @@ public class Main {
      * @param tasks stored tasks
      */
     private static void printList(List<Task> tasks) {
+        if (tasks.isEmpty()) {
+            System.out.println("BEHOLD! AN EMPTY LIST ^w^");
+            return;
+        }
         System.out.println("BEHOLD! Yummy list of tasks:");
         for (int i = 0; i < tasks.size(); i++) {
             Task task = tasks.get(i);
