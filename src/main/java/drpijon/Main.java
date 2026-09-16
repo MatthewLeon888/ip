@@ -82,6 +82,9 @@ public class Main {
         case "unmark":
             updateTaskStatus(inputParts, tasks, false, "COO COO! Task unmarked:");
             break;
+        case "delete":
+            deleteTask(inputParts, tasks);
+            break;
         case "todo":
             createTodoTask(taskDescription, tasks);
             break;
@@ -92,10 +95,42 @@ public class Main {
             createEventTask(taskDescription, tasks);
             break;
         default:
-            throw new DrPijonException("I DONT KNOW THAT COMMAND. Try: list, todo, deadline, event, mark, unmark, or bye ^w^");
+            throw new DrPijonException("I DONT KNOW THAT COMMAND. Try: list, todo, deadline, event, mark, unmark, "
+                    + "delete, or bye ^w^");
         }
         System.out.println(LINE_SEPARATOR);
         return true;
+    }
+
+    /**
+     * Deletes the task at the specified one-based position and prints it.
+     *
+     * @param inputParts command and task number entered by the user
+     * @param tasks stored tasks
+     * @throws DrPijonException when the task number is missing, invalid, or out of range
+     */
+    private static void deleteTask(String[] inputParts, List<Task> tasks) throws DrPijonException {
+        if (inputParts.length < 2) {
+            throw new DrPijonException("BOOOOOOOO! Please specify a task number!");
+        }
+
+        int taskNumber;
+        try {
+            taskNumber = Integer.parseInt(inputParts[1]);
+        } catch (NumberFormatException e) {
+            throw new DrPijonException("BOOOOOOOO! Please specify a valid task number!");
+        }
+
+        if (taskNumber < 1 || taskNumber > tasks.size()) {
+            throw new DrPijonException("BOOOOOOOO! That task number does not exist!");
+        }
+
+        Task deletedTask = tasks.remove(taskNumber - 1);
+        char typeMarker = deletedTask.getTaskType();
+        char statusMarker = deletedTask.isDone() ? 'X' : ' ';
+        System.out.println("COO COO! Task deleted:");
+        System.out.println(String.format("  [%c][%c] %s", typeMarker, statusMarker, deletedTask.getDescription()));
+        System.out.println(String.format("Now you have %d tasks in the list.", tasks.size()));
     }
 
     private static void createEventTask(String taskDescription, List<Task> tasks) throws DrPijonException {
