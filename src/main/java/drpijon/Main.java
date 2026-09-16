@@ -7,6 +7,11 @@ import drpijon.task.Task;
 import drpijon.task.Todo;
 import drpijon.ui.DrPijon;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -17,6 +22,7 @@ import java.util.Scanner;
 public class Main {
     private static final String INVALID_INPUT_MESSAGE = "Bruhhhhh... Invalid input >:(";
     private static final String LINE_SEPARATOR = "____________________________________________________________";
+    private static final Path TASK_FILE = Path.of("data", "drpijon.txt");
 
     /**
      * Starts the Dr. Pijon application and processes commands until the user exits.
@@ -126,6 +132,7 @@ public class Main {
         }
 
         Task deletedTask = tasks.remove(taskNumber - 1);
+        saveTasks(tasks);
         char typeMarker = deletedTask.getTaskType();
         char statusMarker = deletedTask.isDone() ? 'X' : ' ';
         System.out.println("COO COO! Task deleted:");
@@ -141,6 +148,7 @@ public class Main {
 
         Event event = new Event(eventParts[0].trim(), eventParts[1].trim(), eventParts[2].trim());
         tasks.add(event);
+        saveTasks(tasks);
         System.out.println("HMMMMMMMMM ok, Event added:");
         System.out.println(String.format("  [E][ ] %s (from: %s to: %s)", event.getDescription(), event.getFrom(), event.getTo()));
         System.out.println(String.format("Now you have %d tasks in the list.", tasks.size()));
@@ -154,6 +162,7 @@ public class Main {
 
         Deadline deadline = new Deadline(deadlineParts[0].trim(), deadlineParts[1].trim());
         tasks.add(deadline);
+        saveTasks(tasks);
         System.out.println("HMMMMMMMMM ok, Deadline added:");
         System.out.println(String.format("  [D][ ] %s (by: %s)", deadline.getDescription(), deadline.getBy()));
         System.out.println(String.format("Now you have %d tasks in the list.", tasks.size()));
@@ -166,6 +175,7 @@ public class Main {
 
         Todo todo = new Todo(taskDescription);
         tasks.add(todo);
+        saveTasks(tasks);
         System.out.println("HMMMMMMMMM ok, Todo added:");
         System.out.println(String.format("  [T][ ] %s", todo.getDescription()));
         System.out.println(String.format("Now you have %d tasks in the list. ^w^", tasks.size()));
@@ -198,6 +208,7 @@ public class Main {
 
         Task selectedTask = tasks.get(taskNumber - 1);
         selectedTask.setDone(newDoneStatus);
+        saveTasks(tasks);
         System.out.println(confirmationMessage);
         char typeMarker = selectedTask.getTaskType();
         char statusMarker = selectedTask.isDone() ? 'X' : ' ';
@@ -221,6 +232,34 @@ public class Main {
             char statusMarker = task.isDone() ? 'X' : ' ';
             String taskDescription = task.getDescription();
             System.out.println(String.format("%d. [%c][%c] %s", i + 1, typeMarker, statusMarker, taskDescription));
+        }
+    }
+
+    /**
+     * Saves the current tasks in a simple, line-based format.
+     *
+     * @param tasks stored tasks
+     * @throws DrPijonException when the task file cannot be written
+     */
+    private static void saveTasks(List<Task> tasks) throws DrPijonException {
+        List<String> taskLines = new ArrayList<>();
+        for (Task task : tasks) {
+            String taskLine = String.format("%c | %d | %s", task.getTaskType(), task.isDone() ? 1 : 0,
+                    task.getDescription());
+            if (task instanceof Deadline deadline) {
+                taskLine += String.format(" | %s", deadline.getBy());
+            } else if (task instanceof Event event) {
+                taskLine += String.format(" | %s | %s", event.getFrom(), event.getTo());
+            }
+            taskLines.add(taskLine);
+        }
+
+        try {
+            Files.createDirectories(TASK_FILE.getParent());
+            Files.write(TASK_FILE, taskLines, StandardCharsets.UTF_8,
+                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (IOException e) {
+            throw new DrPijonException("Could not save tasks to " + TASK_FILE + ".");
         }
     }
 }
