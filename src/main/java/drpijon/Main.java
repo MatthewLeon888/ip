@@ -34,6 +34,12 @@ public class Main {
         List<Task> tasks = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
 
+        try {
+            loadTasks(tasks);
+        } catch (DrPijonException e) {
+            System.out.println(e.getMessage());
+        }
+
         System.out.println(drPijon.getBanner());
         System.out.println(drPijon.getGreet());
 
@@ -230,9 +236,26 @@ public class Main {
             Task task = tasks.get(i);
             char typeMarker = task.getTaskType();
             char statusMarker = task.isDone() ? 'X' : ' ';
-            String taskDescription = task.getDescription();
+            String taskDescription = formatTaskDetails(task);
             System.out.println(String.format("%d. [%c][%c] %s", i + 1, typeMarker, statusMarker, taskDescription));
         }
+    }
+
+    /**
+     * Formats a task for display, including details specific to its task type.
+     *
+     * @param task task to format
+     * @return task description with deadline or event details when applicable
+     */
+    private static String formatTaskDetails(Task task) {
+        if (task instanceof Deadline deadline) {
+            return String.format("%s (by: %s)", deadline.getDescription(), deadline.getBy());
+        }
+        if (task instanceof Event event) {
+            return String.format("%s (from: %s to: %s)", event.getDescription(),
+                    event.getFrom(), event.getTo());
+        }
+        return task.getDescription();
     }
 
     /**
@@ -260,6 +283,64 @@ public class Main {
                     StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
             throw new DrPijonException("Could not save tasks to " + TASK_FILE + ".");
+        }
+    }
+
+    /**
+     * Loads tasks from the task file when it exists.
+     *
+     * @param tasks list to populate
+     * @throws DrPijonException when the task file cannot be read or contains invalid data
+     */
+    private static void loadTasks(List<Task> tasks) throws DrPijonException {
+        if (!Files.exists(TASK_FILE)) {
+            return;
+        }
+
+        try {
+            for (String taskLine : Files.readAllLines(TASK_FILE, StandardCharsets.UTF_8)) {
+                if (!taskLine.isBlank()) {
+                    tasks.add(parseTaskLine(taskLine));
+                }
+            }
+        } catch (IOException e) {
+            throw new DrPijonException("Could not load tasks from " + TASK_FILE + ".");
+        }
+    }
+
+    /**
+     * Creates a task from one serialized task line.
+     *
+     * @param taskLine serialized task data
+     * @return reconstructed task
+     * @throws DrPijonException when the serialized data is invalid
+     */
+    private static Task parseTaskLine(String taskLine) throws DrPijonException {
+        String[] taskParts = taskLine.split("\\s*\\|\\s*");
+        if (taskParts.length < 3) {
+            throw new DrPijonException("Could not load tasks from " + TASK_FILE + ".");
+        }
+
+        try {
+            boolean isDone = Integer.parseInt(taskParts[1]) == 1;
+            Task task;
+            switch (taskParts[0]) {
+            case "T":
+                task = new Todo(taskParts[2]);
+                break;
+            case "D":
+                task = new Deadline(taskParts[2], taskParts[3]);
+                break;
+            case "E":
+                task = new Event(taskParts[2], taskParts[3], taskParts[4]);
+                break;
+            default:
+                throw new DrPijonException("Could not load tasks from " + TASK_FILE + ".");
+            }
+            task.setDone(isDone);
+            return task;
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            throw new DrPijonException("Could not load tasks from " + TASK_FILE + ".");
         }
     }
 }
