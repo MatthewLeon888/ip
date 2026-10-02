@@ -23,6 +23,24 @@ On Windows, use:
 .\gradlew.bat run
 ```
 
+### Running the packaged JAR
+
+1. Copy the JAR file into an empty folder.
+2. Open a command window in that folder.
+3. Run the command below, replacing `{filename}` with the JAR filename:
+
+```text
+java -jar "{filename}.jar"
+```
+
+For example:
+
+```text
+java -jar "Duke.jar"
+```
+
+Run the command from the same folder as the JAR file.
+
 Dr. Pijon greets you and waits for one command per line. Enter `bye` when you
 are finished.
 
