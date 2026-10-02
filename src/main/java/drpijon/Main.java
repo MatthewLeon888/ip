@@ -1,6 +1,7 @@
 package drpijon;
 
 import drpijon.exception.DrPijonException;
+import drpijon.parser.Parser;
 import drpijon.storage.Storage;
 import drpijon.task.Deadline;
 import drpijon.task.Event;
@@ -40,7 +41,7 @@ public class Main {
         System.out.println(drPijon.getBanner());
         System.out.println(drPijon.getGreet());
 
-        runCommandLoop(drPijon, tasks, storage, scanner);
+        runCommandLoop(drPijon, tasks, storage, new Parser(), scanner);
     }
 
     /**
@@ -49,13 +50,15 @@ public class Main {
      * @param drPijon application messages
      * @param tasks stored tasks
      * @param storage task file storage
+     * @param parser command parser
      * @param scanner console input
      */
-    private static void runCommandLoop(DrPijon drPijon, TaskList tasks, Storage storage, Scanner scanner) {
+    private static void runCommandLoop(DrPijon drPijon, TaskList tasks, Storage storage,
+                                       Parser parser, Scanner scanner) {
         while (scanner.hasNextLine()) {
-            String inputLine = scanner.nextLine().trim();
+            Parser.ParsedCommand parsedCommand = parser.parse(scanner.nextLine());
             try {
-                if (!processCommand(inputLine, drPijon, tasks, storage)) {
+                if (!processCommand(parsedCommand, drPijon, tasks, storage)) {
                     return;
                 }
             } catch (DrPijonException e) {
@@ -68,18 +71,17 @@ public class Main {
     /**
      * Processes one command and returns whether command processing should continue.
      *
-     * @param inputLine trimmed command line
+     * @param parsedCommand parsed command and arguments
      * @param drPijon application messages
      * @param tasks stored tasks
      * @param storage task file storage
      * @return false when the user requested exit
      * @throws DrPijonException when the command or its arguments are invalid
      */
-    private static boolean processCommand(String inputLine, DrPijon drPijon, TaskList tasks,
+    private static boolean processCommand(Parser.ParsedCommand parsedCommand, DrPijon drPijon, TaskList tasks,
                                           Storage storage) throws DrPijonException {
-        String[] inputParts = inputLine.split("\\s+", 2);
-        String command = inputParts[0];
-        String taskDescription = (inputParts.length > 1) ? inputParts[1] : "";
+        String command = parsedCommand.getCommand();
+        String taskDescription = parsedCommand.getArguments();
 
         switch (command) {
         case "bye":
@@ -89,13 +91,13 @@ public class Main {
             printList(tasks);
             break;
         case "mark":
-            updateTaskStatus(inputParts, tasks, storage, true, "COO COO! Task marked as COMPLETE:");
+            updateTaskStatus(parsedCommand, tasks, storage, true, "COO COO! Task marked as COMPLETE:");
             break;
         case "unmark":
-            updateTaskStatus(inputParts, tasks, storage, false, "COO COO! Task unmarked:");
+            updateTaskStatus(parsedCommand, tasks, storage, false, "COO COO! Task unmarked:");
             break;
         case "delete":
-            deleteTask(inputParts, tasks, storage);
+            deleteTask(parsedCommand, tasks, storage);
             break;
         case "todo":
             createTodoTask(taskDescription, tasks, storage);
@@ -117,20 +119,20 @@ public class Main {
     /**
      * Deletes the task at the specified one-based position and prints it.
      *
-     * @param inputParts command and task number entered by the user
+     * @param parsedCommand command and task number entered by the user
      * @param tasks stored tasks
      * @param storage task file storage
      * @throws DrPijonException when the task number is missing, invalid, or out of range
      */
-    private static void deleteTask(String[] inputParts, TaskList tasks, Storage storage)
+    private static void deleteTask(Parser.ParsedCommand parsedCommand, TaskList tasks, Storage storage)
             throws DrPijonException {
-        if (inputParts.length < 2) {
+        if (parsedCommand.getArguments().isEmpty()) {
             throw new DrPijonException("BOOOOOOOO! Please specify a task number!");
         }
 
         int taskNumber;
         try {
-            taskNumber = Integer.parseInt(inputParts[1]);
+            taskNumber = Integer.parseInt(parsedCommand.getArguments());
         } catch (NumberFormatException e) {
             throw new DrPijonException("BOOOOOOOO! Please specify a valid task number!");
         }
@@ -198,21 +200,21 @@ public class Main {
     /**
      * Updates a task's done status and prints the updated task.
      *
-     * @param inputParts command and task number entered by the user
+     * @param parsedCommand command and task number entered by the user
      * @param tasks stored tasks
      * @param newDoneStatus done status to apply
      * @param confirmationMessage message printed after a successful update
      */
-    private static void updateTaskStatus(String[] inputParts, TaskList tasks, Storage storage,
+    private static void updateTaskStatus(Parser.ParsedCommand parsedCommand, TaskList tasks, Storage storage,
                                          boolean newDoneStatus, String confirmationMessage)
             throws DrPijonException {
-        if (inputParts.length < 2) {
+        if (parsedCommand.getArguments().isEmpty()) {
             throw new DrPijonException("BOOOOOOOO! Please specify a task number!");
         }
 
         int taskNumber;
         try {
-            taskNumber = Integer.parseInt(inputParts[1]);
+            taskNumber = Integer.parseInt(parsedCommand.getArguments());
         } catch (NumberFormatException e) {
             throw new DrPijonException("BOOOOOOOO! Please specify a valid task number!");
         }
