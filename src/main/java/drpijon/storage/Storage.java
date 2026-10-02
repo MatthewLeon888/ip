@@ -5,7 +5,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -142,7 +141,7 @@ public class Storage {
      */
     private Deadline parseDeadline(String description, String by) {
         try {
-            return new Deadline(description, LocalDate.parse(by));
+            return Deadline.fromText(description, by);
         } catch (DateTimeParseException e) {
             return Deadline.fromLegacy(description, by);
         }

@@ -17,6 +17,8 @@ public class Ui {
     private static final String LINE_SEPARATOR = "____________________________________________________________";
     private static final DateTimeFormatter DISPLAY_DATE_FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy",
             Locale.ENGLISH);
+    private static final DateTimeFormatter DISPLAY_DATE_TIME_FORMAT = DateTimeFormatter.ofPattern(
+            "MMM dd yyyy, h:mm a", Locale.ENGLISH);
 
     private final DrPijon messages;
     private final Scanner scanner;
@@ -154,7 +156,14 @@ public class Ui {
 
     private String formatTaskDetails(Task task) {
         if (task instanceof Deadline deadline) {
-            String by = deadline.hasDate() ? deadline.getBy().format(DISPLAY_DATE_FORMAT) : deadline.getByText();
+            String by;
+            if (!deadline.hasDate()) {
+                by = deadline.getByText();
+            } else if (deadline.hasTime()) {
+                by = deadline.getBy().format(DISPLAY_DATE_TIME_FORMAT);
+            } else {
+                by = deadline.getBy().format(DISPLAY_DATE_FORMAT);
+            }
             return String.format("%s (by: %s)", deadline.getDescription(), by);
         }
         if (task instanceof Event event) {

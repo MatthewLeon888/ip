@@ -1,12 +1,20 @@
 package drpijon.task;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 
 /**
  * Represents a task with a deadline.
  */
 public class Deadline extends Task {
-    private final LocalDate by;
+    private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm")
+            .withResolverStyle(ResolverStyle.STRICT);
+
+    private final LocalDateTime by;
+    private final boolean hasTime;
     private final String legacyBy;
 
     /**
@@ -17,8 +25,38 @@ public class Deadline extends Task {
      */
     public Deadline(String description, LocalDate by) {
         super(description);
-        this.by = by;
+        this.by = by.atStartOfDay();
+        this.hasTime = false;
         this.legacyBy = null;
+    }
+
+    /**
+     * Creates a task with a description and deadline date and time.
+     *
+     * @param description task description
+     * @param by deadline date and time
+     */
+    public Deadline(String description, LocalDateTime by) {
+        super(description);
+        this.by = by;
+        this.hasTime = true;
+        this.legacyBy = null;
+    }
+
+    /**
+     * Parses a date or date-time deadline from user or storage text.
+     *
+     * @param description task description
+     * @param by deadline date or date-time text
+     * @return parsed deadline
+     * @throws DateTimeParseException when the text is neither a supported date nor date-time
+     */
+    public static Deadline fromText(String description, String by) throws DateTimeParseException {
+        try {
+            return new Deadline(description, LocalDateTime.parse(by, DATE_TIME_FORMAT));
+        } catch (DateTimeParseException e) {
+            return new Deadline(description, LocalDate.parse(by));
+        }
     }
 
     /**
@@ -29,40 +67,53 @@ public class Deadline extends Task {
      * @return deadline that preserves the original text
      */
     public static Deadline fromLegacy(String description, String legacyBy) {
-        return new Deadline(description, null, legacyBy);
+        return new Deadline(description, null, false, legacyBy);
     }
 
-    private Deadline(String description, LocalDate by, String legacyBy) {
+    private Deadline(String description, LocalDateTime by, boolean hasTime, String legacyBy) {
         super(description);
         this.by = by;
+        this.hasTime = hasTime;
         this.legacyBy = legacyBy;
     }
 
     /**
      * Returns the parsed deadline date.
      *
-     * @return parsed deadline date, or null for a legacy free-text deadline
+     * @return parsed deadline date and time, or null for a legacy free-text deadline
      */
-    public LocalDate getBy() {
+    public LocalDateTime getBy() {
         return by;
     }
 
     /**
      * Returns whether this deadline has a parsed date.
      *
-     * @return true when the deadline uses the typed date format
+     * @return true when the deadline uses a typed date or date-time format
      */
     public boolean hasDate() {
         return by != null;
     }
 
     /**
+     * Returns whether the deadline includes an explicit time.
+     *
+     * @return true when the deadline has a time component
+     */
+    public boolean hasTime() {
+        return hasTime;
+    }
+
+    /**
      * Returns the value used when this deadline is saved.
      *
-     * @return ISO date text for parsed dates, or the original legacy text
+     * @return ISO date or date-time text, or the original legacy text
      */
     public String getByText() {
-        return hasDate() ? by.toString() : legacyBy;
+        if (!hasDate()) {
+            return legacyBy;
+        }
+        return hasTime ? by.format(DATE_TIME_FORMAT) : by.toLocalDate().toString();
     }
 
     @Override
