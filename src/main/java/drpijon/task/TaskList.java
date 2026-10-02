@@ -10,6 +10,7 @@ import java.util.Locale;
  * Stores the tasks managed by the Dr. Pijon application.
  */
 public class TaskList implements Iterable<Task> {
+    /** Tasks maintained in their display and storage order. */
     private final List<Task> tasks;
 
     /**

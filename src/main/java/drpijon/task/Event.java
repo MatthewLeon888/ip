@@ -8,11 +8,17 @@ import java.time.format.DateTimeParseException;
  * Represents a task scheduled between a start time and an end time.
  */
 public class Event extends Task {
+    /** Parsed event start date and time, or null for legacy text. */
     private final LocalDateTime from;
+    /** Parsed event end date and time, or null for legacy text. */
     private final LocalDateTime to;
+    /** Whether the event start input included an explicit time. */
     private final boolean hasFromTime;
+    /** Whether the event end input included an explicit time. */
     private final boolean hasToTime;
+    /** Original event start text retained for legacy data. */
     private final String legacyFrom;
+    /** Original event end text retained for legacy data. */
     private final String legacyTo;
 
     /**

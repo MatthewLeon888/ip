@@ -20,6 +20,7 @@ import drpijon.task.Todo;
  * Loads tasks from and saves tasks to the application's task file.
  */
 public class Storage {
+    /** File where tasks are persisted between application runs. */
     private final Path taskFile;
 
     /**

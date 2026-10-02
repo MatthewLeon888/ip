@@ -13,6 +13,7 @@ import drpijon.ui.Ui;
  * Displays deadlines and events occurring on a specified date.
  */
 public class OnCommand extends Command {
+    /** Date text supplied with the lookup command. */
     private final String arguments;
 
     /**
