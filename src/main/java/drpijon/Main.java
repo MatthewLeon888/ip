@@ -4,6 +4,7 @@ import drpijon.exception.DrPijonException;
 import drpijon.task.Deadline;
 import drpijon.task.Event;
 import drpijon.task.Task;
+import drpijon.task.TaskList;
 import drpijon.task.Todo;
 import drpijon.ui.DrPijon;
 
@@ -31,7 +32,7 @@ public class Main {
      */
     public static void main(String[] args) {
         DrPijon drPijon = new DrPijon();
-        List<Task> tasks = new ArrayList<>();
+        TaskList tasks = new TaskList();
         Scanner scanner = new Scanner(System.in);
 
         try {
@@ -53,7 +54,7 @@ public class Main {
      * @param tasks stored tasks
      * @param scanner console input
      */
-    private static void runCommandLoop(DrPijon drPijon, List<Task> tasks, Scanner scanner) {
+    private static void runCommandLoop(DrPijon drPijon, TaskList tasks, Scanner scanner) {
         while (scanner.hasNextLine()) {
             String inputLine = scanner.nextLine().trim();
             try {
@@ -76,7 +77,7 @@ public class Main {
      * @return false when the user requested exit
      * @throws DrPijonException when the command or its arguments are invalid
      */
-    private static boolean processCommand(String inputLine, DrPijon drPijon, List<Task> tasks) throws DrPijonException {
+    private static boolean processCommand(String inputLine, DrPijon drPijon, TaskList tasks) throws DrPijonException {
         String[] inputParts = inputLine.split("\\s+", 2);
         String command = inputParts[0];
         String taskDescription = (inputParts.length > 1) ? inputParts[1] : "";
@@ -121,7 +122,7 @@ public class Main {
      * @param tasks stored tasks
      * @throws DrPijonException when the task number is missing, invalid, or out of range
      */
-    private static void deleteTask(String[] inputParts, List<Task> tasks) throws DrPijonException {
+    private static void deleteTask(String[] inputParts, TaskList tasks) throws DrPijonException {
         if (inputParts.length < 2) {
             throw new DrPijonException("BOOOOOOOO! Please specify a task number!");
         }
@@ -146,21 +147,24 @@ public class Main {
         System.out.println(String.format("Now you have %d tasks in the list.", tasks.size()));
     }
 
-    private static void createEventTask(String taskDescription, List<Task> tasks) throws DrPijonException {
+    private static void createEventTask(String taskDescription, TaskList tasks) throws DrPijonException {
         String[] eventParts = taskDescription.split("/from|/to", 3);
-        if (eventParts.length < 3 || eventParts[0].isBlank() || eventParts[1].isBlank() || eventParts[2].isBlank()) {
-            throw new DrPijonException("OI EVENT MUST INCLUDE /from AND /to >:( Try: event career fest /from 14 Sep /to 21 Sep");
+        if (eventParts.length < 3 || eventParts[0].isBlank() || eventParts[1].isBlank()
+                || eventParts[2].isBlank()) {
+            throw new DrPijonException("OI EVENT MUST INCLUDE /from AND /to >:( Try: event career fest /from 14 Sep "
+                    + "/to 21 Sep");
         }
 
         Event event = new Event(eventParts[0].trim(), eventParts[1].trim(), eventParts[2].trim());
         tasks.add(event);
         saveTasks(tasks);
         System.out.println("HMMMMMMMMM ok, Event added:");
-        System.out.println(String.format("  [E][ ] %s (from: %s to: %s)", event.getDescription(), event.getFrom(), event.getTo()));
+        System.out.println(String.format("  [E][ ] %s (from: %s to: %s)", event.getDescription(),
+                event.getFrom(), event.getTo()));
         System.out.println(String.format("Now you have %d tasks in the list.", tasks.size()));
     }
 
-    private static void createDeadlineTask(String taskDescription, List<Task> tasks) throws DrPijonException {
+    private static void createDeadlineTask(String taskDescription, TaskList tasks) throws DrPijonException {
         String[] deadlineParts = taskDescription.split("/by", 2);
         if (deadlineParts.length < 2 || deadlineParts[0].isBlank() || deadlineParts[1].isBlank()) {
             throw new DrPijonException("OI DEADLINE MUST INCLUDE /by >:( Try: deadline return book /by Sunday");
@@ -174,7 +178,7 @@ public class Main {
         System.out.println(String.format("Now you have %d tasks in the list.", tasks.size()));
     }
 
-    private static void createTodoTask(String taskDescription, List<Task> tasks) throws DrPijonException {
+    private static void createTodoTask(String taskDescription, TaskList tasks) throws DrPijonException {
         if (taskDescription.isBlank()) {
             throw new DrPijonException("OI TODO DESCRIPTION CANT BE EMPTY >:( Try: todo read book");
         }
@@ -195,7 +199,7 @@ public class Main {
      * @param newDoneStatus done status to apply
      * @param confirmationMessage message printed after a successful update
      */
-    private static void updateTaskStatus(String[] inputParts, List<Task> tasks,
+    private static void updateTaskStatus(String[] inputParts, TaskList tasks,
                                          boolean newDoneStatus, String confirmationMessage) throws DrPijonException {
         if (inputParts.length < 2) {
             throw new DrPijonException("BOOOOOOOO! Please specify a task number!");
@@ -226,7 +230,7 @@ public class Main {
      *
      * @param tasks stored tasks
      */
-    private static void printList(List<Task> tasks) {
+    private static void printList(TaskList tasks) {
         if (tasks.isEmpty()) {
             System.out.println("BEHOLD! AN EMPTY LIST ^w^");
             return;
@@ -264,7 +268,7 @@ public class Main {
      * @param tasks stored tasks
      * @throws DrPijonException when the task file cannot be written
      */
-    private static void saveTasks(List<Task> tasks) throws DrPijonException {
+    private static void saveTasks(TaskList tasks) throws DrPijonException {
         List<String> taskLines = new ArrayList<>();
         for (Task task : tasks) {
             String taskLine = String.format("%c | %d | %s", task.getTaskType(), task.isDone() ? 1 : 0,
@@ -292,7 +296,7 @@ public class Main {
      * @param tasks list to populate
      * @throws DrPijonException when the task file cannot be read or contains invalid data
      */
-    private static void loadTasks(List<Task> tasks) throws DrPijonException {
+    private static void loadTasks(TaskList tasks) throws DrPijonException {
         if (!Files.exists(TASK_FILE)) {
             return;
         }
