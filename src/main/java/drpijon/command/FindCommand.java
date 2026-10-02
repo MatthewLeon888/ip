@@ -9,6 +9,7 @@ import drpijon.ui.Ui;
  * Displays tasks whose descriptions contain a keyword.
  */
 public class FindCommand extends Command {
+    /** Keyword used to search task descriptions. */
     private final String keyword;
 
     /**

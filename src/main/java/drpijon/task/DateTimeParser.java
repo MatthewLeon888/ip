@@ -10,8 +10,10 @@ import java.time.format.ResolverStyle;
  * Parses and serializes the date and date-time values used by tasks.
  */
 public final class DateTimeParser {
+    /** Strict formatter for date-only values. */
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("uuuu-MM-dd")
             .withResolverStyle(ResolverStyle.STRICT);
+    /** Strict formatter for date-time values with a 24-hour clock. */
     private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm")
             .withResolverStyle(ResolverStyle.STRICT);
 

@@ -11,9 +11,13 @@ import drpijon.ui.Ui;
  * Runs the Dr. Pijon command-line task manager.
  */
 public class Main {
+    /** Default relative path used for persisted tasks. */
     private static final String TASK_FILE_PATH = "data/drpijon.txt";
+    /** Console interface used to interact with the user. */
     private final Ui ui;
+    /** File-backed storage used to load and save tasks. */
     private final Storage storage;
+    /** In-memory task list used by the running application. */
     private final TaskList tasks;
 
     /**

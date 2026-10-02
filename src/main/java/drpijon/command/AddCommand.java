@@ -10,6 +10,7 @@ import drpijon.ui.Ui;
  * Provides shared behavior for commands that add a task.
  */
 public abstract class AddCommand extends Command {
+    /** User-provided description and type-specific details for the task. */
     private final String description;
 
     /**

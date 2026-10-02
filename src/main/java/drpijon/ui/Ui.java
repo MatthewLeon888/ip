@@ -17,13 +17,18 @@ import drpijon.task.Todo;
  * Handles console input and common user-facing messages.
  */
 public class Ui {
+    /** Divider printed between command responses. */
     private static final String LINE_SEPARATOR = "____________________________________________________________";
+    /** Display format for dates without an explicit time. */
     private static final DateTimeFormatter DISPLAY_DATE_FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy",
             Locale.ENGLISH);
+    /** Display format for dates with an explicit time. */
     private static final DateTimeFormatter DISPLAY_DATE_TIME_FORMAT = DateTimeFormatter.ofPattern(
             "MMM dd yyyy, h:mm a", Locale.ENGLISH);
 
+    /** Fixed application messages shown to the user. */
     private final DrPijon messages;
+    /** Console scanner used to read user commands. */
     private final Scanner scanner;
 
     /**

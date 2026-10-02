@@ -10,6 +10,7 @@ import drpijon.ui.Ui;
  * Provides shared task-number validation for commands that target one task.
  */
 public abstract class TaskIndexCommand extends Command {
+    /** User-provided one-based task number. */
     private final String arguments;
 
     /**

@@ -8,8 +8,11 @@ import java.time.format.DateTimeParseException;
  * Represents a task with a deadline.
  */
 public class Deadline extends Task {
+    /** Parsed deadline date and time, or null for legacy text. */
     private final LocalDateTime by;
+    /** Whether the deadline input included an explicit time. */
     private final boolean hasTime;
+    /** Original deadline text retained for legacy data. */
     private final String legacyBy;
 
     /**
