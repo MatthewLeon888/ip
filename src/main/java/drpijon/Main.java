@@ -8,16 +8,13 @@ import drpijon.task.Event;
 import drpijon.task.Task;
 import drpijon.task.TaskList;
 import drpijon.task.Todo;
-import drpijon.ui.DrPijon;
-
-import java.util.Scanner;
+import drpijon.ui.Ui;
 
 /**
  * Runs the Dr. Pijon command-line task manager.
  */
 public class Main {
     private static final String INVALID_INPUT_MESSAGE = "Bruhhhhh... Invalid input >:(";
-    private static final String LINE_SEPARATOR = "____________________________________________________________";
     private static final String TASK_FILE_PATH = "data/drpijon.txt";
 
     /**
@@ -26,44 +23,40 @@ public class Main {
      * @param args command-line arguments, which are not used
      */
     public static void main(String[] args) {
-        DrPijon drPijon = new DrPijon();
+        Ui ui = new Ui();
         Storage storage = new Storage(TASK_FILE_PATH);
         TaskList tasks;
-        Scanner scanner = new Scanner(System.in);
 
         try {
             tasks = storage.load();
         } catch (DrPijonException e) {
-            System.out.println(e.getMessage());
+            ui.showError(e.getMessage());
             tasks = new TaskList();
         }
 
-        System.out.println(drPijon.getBanner());
-        System.out.println(drPijon.getGreet());
+        ui.showWelcome();
 
-        runCommandLoop(drPijon, tasks, storage, new Parser(), scanner);
+        runCommandLoop(tasks, storage, new Parser(), ui);
     }
 
     /**
      * Reads and processes commands until the user exits or input ends.
      *
-     * @param drPijon application messages
      * @param tasks stored tasks
      * @param storage task file storage
      * @param parser command parser
-     * @param scanner console input
+     * @param ui console user interface
      */
-    private static void runCommandLoop(DrPijon drPijon, TaskList tasks, Storage storage,
-                                       Parser parser, Scanner scanner) {
-        while (scanner.hasNextLine()) {
-            Parser.ParsedCommand parsedCommand = parser.parse(scanner.nextLine());
+    private static void runCommandLoop(TaskList tasks, Storage storage, Parser parser, Ui ui) {
+        while (ui.hasNextLine()) {
+            Parser.ParsedCommand parsedCommand = parser.parse(ui.readLine());
             try {
-                if (!processCommand(parsedCommand, drPijon, tasks, storage)) {
+                if (!processCommand(parsedCommand, tasks, storage, ui)) {
                     return;
                 }
             } catch (DrPijonException e) {
-                System.out.println(e.getMessage());
-                System.out.println(LINE_SEPARATOR);
+                ui.showError(e.getMessage());
+                ui.showLineSeparator();
             }
         }
     }
@@ -72,20 +65,20 @@ public class Main {
      * Processes one command and returns whether command processing should continue.
      *
      * @param parsedCommand parsed command and arguments
-     * @param drPijon application messages
      * @param tasks stored tasks
      * @param storage task file storage
+     * @param ui console user interface
      * @return false when the user requested exit
      * @throws DrPijonException when the command or its arguments are invalid
      */
-    private static boolean processCommand(Parser.ParsedCommand parsedCommand, DrPijon drPijon, TaskList tasks,
-                                          Storage storage) throws DrPijonException {
+    private static boolean processCommand(Parser.ParsedCommand parsedCommand, TaskList tasks,
+                                          Storage storage, Ui ui) throws DrPijonException {
         String command = parsedCommand.getCommand();
         String taskDescription = parsedCommand.getArguments();
 
         switch (command) {
         case "bye":
-            System.out.println(drPijon.getGoodbye());
+            ui.showGoodbye();
             return false;
         case "list":
             printList(tasks);
@@ -112,7 +105,7 @@ public class Main {
             throw new DrPijonException("I DONT KNOW THAT COMMAND. Try: list, todo, deadline, event, mark, unmark, "
                     + "delete, or bye ^w^");
         }
-        System.out.println(LINE_SEPARATOR);
+        ui.showLineSeparator();
         return true;
     }
 
