@@ -1,5 +1,6 @@
 package drpijon.task;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
@@ -122,6 +123,16 @@ public class Event extends Task {
      */
     public boolean hasToTime() {
         return hasToTime;
+    }
+
+    @Override
+    public boolean occursOn(LocalDate date) {
+        if (!hasFromDate() || !hasToDate()) {
+            return false;
+        }
+        LocalDate fromDate = from.toLocalDate();
+        LocalDate toDate = to.toLocalDate();
+        return !date.isBefore(fromDate) && !date.isAfter(toDate);
     }
 
     /**

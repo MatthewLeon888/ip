@@ -95,6 +95,11 @@ public class Deadline extends Task {
         return hasTime;
     }
 
+    @Override
+    public boolean occursOn(LocalDate date) {
+        return hasDate() && by.toLocalDate().equals(date);
+    }
+
     /**
      * Returns the value used when this deadline is saved.
      *

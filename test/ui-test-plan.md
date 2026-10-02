@@ -108,7 +108,7 @@ the command loop.
       "Co-oo! Dr. Pijon at your service",
       "What are we pecking at today?",
       "",
-      "I DONT KNOW THAT COMMAND. Try: list, todo, deadline, event, mark, unmark, delete, or bye ^w^",
+      "I DONT KNOW THAT COMMAND. Try: list, on, todo, deadline, event, mark, unmark, delete, or bye ^w^",
       "____________________________________________________________",
       "I smell bread crumbs! I'm leaving.",
       "DR PIJON SERVICE END",
@@ -201,9 +201,10 @@ the command loop.
   },
   {
     "id": "TC-003",
-    "aim": "Verify a non-ISO deadline date raises DrPijonException and does not add a task.",
+    "aim": "Verify non-ISO deadline and lookup dates raise DrPijonException without ending the session.",
     "inputs": [
       "deadline return book /by Sunday",
+      "on Sunday",
       "bye"
     ],
     "expected_output_lines": [
@@ -277,6 +278,8 @@ the command loop.
       "What are we pecking at today?",
       "",
       "OI DEADLINE DATE/TIME MUST USE yyyy-MM-dd or yyyy-MM-dd HHmm >:( Try: deadline return book /by 2019-10-15 1800",
+      "____________________________________________________________",
+      "OI ON DATE MUST USE yyyy-MM-dd >:( Try: on 2026-08-06",
       "____________________________________________________________",
       "I smell bread crumbs! I'm leaving.",
       "DR PIJON SERVICE END",
@@ -389,7 +392,7 @@ the command loop.
   },
   {
     "id": "TC-005",
-    "aim": "Verify task additions and status changes are persisted in the task file.",
+    "aim": "Verify task additions, status changes, and date lookups use the typed task dates.",
     "inputs": [
       "todo read book",
       "mark 1",
@@ -397,6 +400,8 @@ the command loop.
       "deadline return book /by 2019-10-15 1800",
       "event project meeting /from 2026-08-06 1400 /to 2026-08-06 1600",
       "list",
+      "on 2019-10-15",
+      "on 2026-08-06",
       "bye"
     ],
     "expected_output_lines": [
@@ -491,6 +496,12 @@ the command loop.
       "1. [T][ ] read book",
       "2. [D][ ] return book (by: Oct 15 2019, 6:00 PM)",
       "3. [E][ ] project meeting (from: Aug 06 2026, 2:00 PM to: Aug 06 2026, 4:00 PM)",
+      "____________________________________________________________",
+      "BEHOLD! Tasks on Oct 15 2019:",
+      "1. [D][ ] return book (by: Oct 15 2019, 6:00 PM)",
+      "____________________________________________________________",
+      "BEHOLD! Tasks on Aug 06 2026:",
+      "1. [E][ ] project meeting (from: Aug 06 2026, 2:00 PM to: Aug 06 2026, 4:00 PM)",
       "____________________________________________________________",
       "I smell bread crumbs! I'm leaving.",
       "DR PIJON SERVICE END",

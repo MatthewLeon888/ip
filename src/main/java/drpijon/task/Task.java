@@ -1,5 +1,7 @@
 package drpijon.task;
 
+import java.time.LocalDate;
+
 /**
  * Represents a task with a textual description.
  */
@@ -37,6 +39,16 @@ public class Task {
      */
     public boolean isDone() {
         return isDone;
+    }
+
+    /**
+     * Returns whether this task occurs on a date.
+     *
+     * @param date date to check
+     * @return true when this task occurs on the specified date
+     */
+    public boolean occursOn(LocalDate date) {
+        return false;
     }
     
     @Override

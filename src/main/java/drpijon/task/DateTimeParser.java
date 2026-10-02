@@ -10,6 +10,8 @@ import java.time.format.ResolverStyle;
  * Parses and serializes the date and date-time values used by tasks.
  */
 public final class DateTimeParser {
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("uuuu-MM-dd")
+            .withResolverStyle(ResolverStyle.STRICT);
     private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm")
             .withResolverStyle(ResolverStyle.STRICT);
 
@@ -30,6 +32,17 @@ public final class DateTimeParser {
         } catch (DateTimeParseException e) {
             return LocalDate.parse(normalizedText).atStartOfDay();
         }
+    }
+
+    /**
+     * Parses a date-only value.
+     *
+     * @param text date text
+     * @return parsed date
+     * @throws DateTimeParseException when the text is not a supported date
+     */
+    public static LocalDate parseDate(String text) throws DateTimeParseException {
+        return LocalDate.parse(normalize(text), DATE_FORMAT);
     }
 
     /**

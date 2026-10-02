@@ -1,5 +1,6 @@
 package drpijon.task;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -62,6 +63,22 @@ public class TaskList implements Iterable<Task> {
      */
     public boolean isEmpty() {
         return tasks.isEmpty();
+    }
+
+    /**
+     * Returns typed tasks occurring on the specified date.
+     *
+     * @param date date to search for
+     * @return matching tasks in their original order
+     */
+    public List<Task> findOnDate(LocalDate date) {
+        List<Task> matchingTasks = new ArrayList<>();
+        for (Task task : tasks) {
+            if (task.occursOn(date)) {
+                matchingTasks.add(task);
+            }
+        }
+        return matchingTasks;
     }
 
     @Override
