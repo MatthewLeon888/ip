@@ -1,0 +1,32 @@
+package drpijon.command;
+
+import drpijon.exception.DrPijonException;
+import drpijon.storage.Storage;
+import drpijon.task.TaskList;
+import drpijon.ui.Ui;
+
+/**
+ * Displays tasks whose descriptions contain a keyword.
+ */
+public class FindCommand extends Command {
+    private final String keyword;
+
+    /**
+     * Creates a keyword search command.
+     *
+     * @param keyword keyword entered by the user
+     */
+    public FindCommand(String keyword) {
+        this.keyword = keyword;
+    }
+
+    @Override
+    public void execute(TaskList tasks, Ui ui, Storage storage) throws DrPijonException {
+        if (keyword.isBlank()) {
+            throw new DrPijonException("OI FIND MUST INCLUDE A KEYWORD >:( Try: find book");
+        }
+
+        String trimmedKeyword = keyword.trim();
+        ui.showMatchingTasks(tasks.find(trimmedKeyword), trimmedKeyword);
+    }
+}
