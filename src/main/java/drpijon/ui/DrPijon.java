@@ -1,5 +1,6 @@
 package drpijon.ui;
 
+
 /**
  * Stores the banner and messages displayed by the Dr. Pijon application.
  */
