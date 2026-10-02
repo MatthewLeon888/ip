@@ -5,6 +5,7 @@ import drpijon.command.DeadlineCommand;
 import drpijon.command.DeleteCommand;
 import drpijon.command.EventCommand;
 import drpijon.command.ExitCommand;
+import drpijon.command.FindCommand;
 import drpijon.command.ListCommand;
 import drpijon.command.MarkCommand;
 import drpijon.command.OnCommand;
@@ -35,6 +36,8 @@ public class Parser {
             return new ListCommand();
         case "on":
             return new OnCommand(arguments);
+        case "find":
+            return new FindCommand(arguments);
         case "mark":
             return new MarkCommand(arguments);
         case "unmark":
@@ -48,8 +51,8 @@ public class Parser {
         case "event":
             return new EventCommand(arguments);
         default:
-            throw new DrPijonException("I DONT KNOW THAT COMMAND. Try: list, on, todo, deadline, event, mark, "
-                    + "unmark, delete, or bye ^w^");
+            throw new DrPijonException("I DONT KNOW THAT COMMAND. Try: list, on, find, todo, deadline, event, "
+                    + "mark, unmark, delete, or bye ^w^");
         }
     }
 }

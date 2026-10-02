@@ -120,6 +120,24 @@ public class Ui {
     }
 
     /**
+     * Displays tasks whose descriptions match a keyword.
+     *
+     * @param tasks matching tasks to display
+     * @param keyword keyword used for the search
+     */
+    public void showMatchingTasks(List<Task> tasks, String keyword) {
+        if (tasks.isEmpty()) {
+            System.out.println(String.format("BEHOLD! No tasks match: %s ^w^", keyword));
+            return;
+        }
+
+        System.out.println("Here are the matching tasks in your list:");
+        for (int i = 0; i < tasks.size(); i++) {
+            showTaskLine(tasks.get(i), i + 1);
+        }
+    }
+
+    /**
      * Displays confirmation that a task was added.
      *
      * @param task added task

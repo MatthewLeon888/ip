@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Stores the tasks managed by the Dr. Pijon application.
@@ -75,6 +76,23 @@ public class TaskList implements Iterable<Task> {
         List<Task> matchingTasks = new ArrayList<>();
         for (Task task : tasks) {
             if (task.occursOn(date)) {
+                matchingTasks.add(task);
+            }
+        }
+        return matchingTasks;
+    }
+
+    /**
+     * Returns tasks whose descriptions contain a keyword, ignoring letter case.
+     *
+     * @param keyword keyword to search for
+     * @return matching tasks in their original order
+     */
+    public List<Task> find(String keyword) {
+        String normalizedKeyword = keyword.toLowerCase(Locale.ROOT);
+        List<Task> matchingTasks = new ArrayList<>();
+        for (Task task : tasks) {
+            if (task.getDescription().toLowerCase(Locale.ROOT).contains(normalizedKeyword)) {
                 matchingTasks.add(task);
             }
         }
