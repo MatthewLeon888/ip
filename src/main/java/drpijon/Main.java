@@ -14,8 +14,31 @@ import drpijon.ui.Ui;
  * Runs the Dr. Pijon command-line task manager.
  */
 public class Main {
-    private static final String INVALID_INPUT_MESSAGE = "Bruhhhhh... Invalid input >:(";
     private static final String TASK_FILE_PATH = "data/drpijon.txt";
+    private final Ui ui;
+    private final Storage storage;
+    private final Parser parser;
+    private final TaskList tasks;
+
+    /**
+     * Creates the application and loads its saved tasks.
+     *
+     * @param filePath path to the task data file
+     */
+    public Main(String filePath) {
+        ui = new Ui();
+        storage = new Storage(filePath);
+        parser = new Parser();
+
+        TaskList loadedTasks;
+        try {
+            loadedTasks = storage.load();
+        } catch (DrPijonException e) {
+            ui.showError(e.getMessage());
+            loadedTasks = new TaskList();
+        }
+        tasks = loadedTasks;
+    }
 
     /**
      * Starts the Dr. Pijon application and processes commands until the user exits.
@@ -23,35 +46,25 @@ public class Main {
      * @param args command-line arguments, which are not used
      */
     public static void main(String[] args) {
-        Ui ui = new Ui();
-        Storage storage = new Storage(TASK_FILE_PATH);
-        TaskList tasks;
+        new Main(TASK_FILE_PATH).run();
+    }
 
-        try {
-            tasks = storage.load();
-        } catch (DrPijonException e) {
-            ui.showError(e.getMessage());
-            tasks = new TaskList();
-        }
-
+    /**
+     * Runs the application until the user exits or input ends.
+     */
+    public void run() {
         ui.showWelcome();
-
-        runCommandLoop(tasks, storage, new Parser(), ui);
+        runCommandLoop();
     }
 
     /**
      * Reads and processes commands until the user exits or input ends.
-     *
-     * @param tasks stored tasks
-     * @param storage task file storage
-     * @param parser command parser
-     * @param ui console user interface
      */
-    private static void runCommandLoop(TaskList tasks, Storage storage, Parser parser, Ui ui) {
+    private void runCommandLoop() {
         while (ui.hasNextLine()) {
             Parser.ParsedCommand parsedCommand = parser.parse(ui.readLine());
             try {
-                if (!processCommand(parsedCommand, tasks, storage, ui)) {
+                if (!processCommand(parsedCommand)) {
                     return;
                 }
             } catch (DrPijonException e) {
@@ -65,14 +78,10 @@ public class Main {
      * Processes one command and returns whether command processing should continue.
      *
      * @param parsedCommand parsed command and arguments
-     * @param tasks stored tasks
-     * @param storage task file storage
-     * @param ui console user interface
      * @return false when the user requested exit
      * @throws DrPijonException when the command or its arguments are invalid
      */
-    private static boolean processCommand(Parser.ParsedCommand parsedCommand, TaskList tasks,
-                                          Storage storage, Ui ui) throws DrPijonException {
+    private boolean processCommand(Parser.ParsedCommand parsedCommand) throws DrPijonException {
         String command = parsedCommand.getCommand();
         String taskDescription = parsedCommand.getArguments();
 
@@ -84,22 +93,22 @@ public class Main {
             ui.showTaskList(tasks);
             break;
         case "mark":
-            updateTaskStatus(parsedCommand, tasks, storage, true, ui);
+            updateTaskStatus(parsedCommand, true);
             break;
         case "unmark":
-            updateTaskStatus(parsedCommand, tasks, storage, false, ui);
+            updateTaskStatus(parsedCommand, false);
             break;
         case "delete":
-            deleteTask(parsedCommand, tasks, storage, ui);
+            deleteTask(parsedCommand);
             break;
         case "todo":
-            createTodoTask(taskDescription, tasks, storage, ui);
+            createTodoTask(taskDescription);
             break;
         case "deadline":
-            createDeadlineTask(taskDescription, tasks, storage, ui);
+            createDeadlineTask(taskDescription);
             break;
         case "event":
-            createEventTask(taskDescription, tasks, storage, ui);
+            createEventTask(taskDescription);
             break;
         default:
             throw new DrPijonException("I DONT KNOW THAT COMMAND. Try: list, todo, deadline, event, mark, unmark, "
@@ -113,12 +122,9 @@ public class Main {
      * Deletes the task at the specified one-based position and prints it.
      *
      * @param parsedCommand command and task number entered by the user
-     * @param tasks stored tasks
-     * @param storage task file storage
-     * @param ui console user interface
      * @throws DrPijonException when the task number is missing, invalid, or out of range
      */
-    private static void deleteTask(Parser.ParsedCommand parsedCommand, TaskList tasks, Storage storage, Ui ui)
+    private void deleteTask(Parser.ParsedCommand parsedCommand)
             throws DrPijonException {
         if (parsedCommand.getArguments().isEmpty()) {
             throw new DrPijonException("BOOOOOOOO! Please specify a task number!");
@@ -140,8 +146,7 @@ public class Main {
         ui.showTaskDeleted(deletedTask, tasks.size());
     }
 
-    private static void createEventTask(String taskDescription, TaskList tasks, Storage storage, Ui ui)
-            throws DrPijonException {
+    private void createEventTask(String taskDescription) throws DrPijonException {
         String[] eventParts = taskDescription.split("/from|/to", 3);
         if (eventParts.length < 3 || eventParts[0].isBlank() || eventParts[1].isBlank()
                 || eventParts[2].isBlank()) {
@@ -155,8 +160,7 @@ public class Main {
         ui.showTaskAdded(event, tasks.size());
     }
 
-    private static void createDeadlineTask(String taskDescription, TaskList tasks, Storage storage, Ui ui)
-            throws DrPijonException {
+    private void createDeadlineTask(String taskDescription) throws DrPijonException {
         String[] deadlineParts = taskDescription.split("/by", 2);
         if (deadlineParts.length < 2 || deadlineParts[0].isBlank() || deadlineParts[1].isBlank()) {
             throw new DrPijonException("OI DEADLINE MUST INCLUDE /by >:( Try: deadline return book /by Sunday");
@@ -168,8 +172,7 @@ public class Main {
         ui.showTaskAdded(deadline, tasks.size());
     }
 
-    private static void createTodoTask(String taskDescription, TaskList tasks, Storage storage, Ui ui)
-            throws DrPijonException {
+    private void createTodoTask(String taskDescription) throws DrPijonException {
         if (taskDescription.isBlank()) {
             throw new DrPijonException("OI TODO DESCRIPTION CANT BE EMPTY >:( Try: todo read book");
         }
@@ -184,13 +187,9 @@ public class Main {
      * Updates a task's done status and prints the updated task.
      *
      * @param parsedCommand command and task number entered by the user
-     * @param tasks stored tasks
-     * @param storage task file storage
      * @param newDoneStatus done status to apply
-     * @param ui console user interface
      */
-    private static void updateTaskStatus(Parser.ParsedCommand parsedCommand, TaskList tasks, Storage storage,
-                                         boolean newDoneStatus, Ui ui)
+    private void updateTaskStatus(Parser.ParsedCommand parsedCommand, boolean newDoneStatus)
             throws DrPijonException {
         if (parsedCommand.getArguments().isEmpty()) {
             throw new DrPijonException("BOOOOOOOO! Please specify a task number!");
