@@ -53,10 +53,12 @@ public class CommandHandler {
 
         switch (command) {
         case "bye":
-            ui.showGoodbye();
-            return false;
+            Command exitCommand = new ExitCommand();
+            exitCommand.execute(tasks, ui, storage);
+            return exitCommand.isExit();
         case "list":
-            ui.showTaskList(tasks);
+            Command listCommand = new ListCommand();
+            listCommand.execute(tasks, ui, storage);
             break;
         case "mark":
             updateTaskStatus(parsedCommand, true);
