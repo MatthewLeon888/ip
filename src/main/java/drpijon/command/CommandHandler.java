@@ -3,7 +3,6 @@ package drpijon.command;
 import drpijon.exception.DrPijonException;
 import drpijon.parser.Parser;
 import drpijon.storage.Storage;
-import drpijon.task.Task;
 import drpijon.task.TaskList;
 import drpijon.ui.Ui;
 
@@ -57,13 +56,13 @@ public class CommandHandler {
             executeCommand(new ListCommand());
             break;
         case "mark":
-            updateTaskStatus(parsedCommand, true);
+            executeCommand(new MarkCommand(taskDescription));
             break;
         case "unmark":
-            updateTaskStatus(parsedCommand, false);
+            executeCommand(new UnmarkCommand(taskDescription));
             break;
         case "delete":
-            deleteTask(parsedCommand);
+            executeCommand(new DeleteCommand(taskDescription));
             break;
         case "todo":
             executeCommand(new TodoCommand(taskDescription));
@@ -86,64 +85,4 @@ public class CommandHandler {
         command.execute(tasks, ui, storage);
     }
 
-    /**
-     * Deletes the task at the specified one-based position.
-     *
-     * @param parsedCommand command and task number entered by the user
-     * @throws DrPijonException when the task number is missing, invalid, or out of range
-     */
-    private void deleteTask(Parser.ParsedCommand parsedCommand) throws DrPijonException {
-        if (parsedCommand.getArguments().isEmpty()) {
-            throw new DrPijonException("BOOOOOOOO! Please specify a task number!");
-        }
-
-        int taskNumber;
-        try {
-            taskNumber = Integer.parseInt(parsedCommand.getArguments());
-        } catch (NumberFormatException e) {
-            throw new DrPijonException("BOOOOOOOO! Please specify a valid task number!");
-        }
-
-        if (taskNumber < 1 || taskNumber > tasks.size()) {
-            throw new DrPijonException("BOOOOOOOO! That task number does not exist!");
-        }
-
-        Task deletedTask = tasks.remove(taskNumber - 1);
-        storage.save(tasks);
-        ui.showTaskDeleted(deletedTask, tasks.size());
-    }
-
-    /**
-     * Updates a task's done status.
-     *
-     * @param parsedCommand command and task number entered by the user
-     * @param newDoneStatus done status to apply
-     * @throws DrPijonException when the task number is missing, invalid, or out of range
-     */
-    private void updateTaskStatus(Parser.ParsedCommand parsedCommand, boolean newDoneStatus)
-            throws DrPijonException {
-        if (parsedCommand.getArguments().isEmpty()) {
-            throw new DrPijonException("BOOOOOOOO! Please specify a task number!");
-        }
-
-        int taskNumber;
-        try {
-            taskNumber = Integer.parseInt(parsedCommand.getArguments());
-        } catch (NumberFormatException e) {
-            throw new DrPijonException("BOOOOOOOO! Please specify a valid task number!");
-        }
-
-        if (taskNumber < 1 || taskNumber > tasks.size()) {
-            throw new DrPijonException("BOOOOOOOO! That task number does not exist!");
-        }
-
-        Task selectedTask = tasks.get(taskNumber - 1);
-        selectedTask.setDone(newDoneStatus);
-        storage.save(tasks);
-        if (newDoneStatus) {
-            ui.showTaskMarked(selectedTask);
-        } else {
-            ui.showTaskUnmarked(selectedTask);
-        }
-    }
 }
