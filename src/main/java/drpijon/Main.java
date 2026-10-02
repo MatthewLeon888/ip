@@ -81,25 +81,25 @@ public class Main {
             ui.showGoodbye();
             return false;
         case "list":
-            printList(tasks);
+            ui.showTaskList(tasks);
             break;
         case "mark":
-            updateTaskStatus(parsedCommand, tasks, storage, true, "COO COO! Task marked as COMPLETE:");
+            updateTaskStatus(parsedCommand, tasks, storage, true, ui);
             break;
         case "unmark":
-            updateTaskStatus(parsedCommand, tasks, storage, false, "COO COO! Task unmarked:");
+            updateTaskStatus(parsedCommand, tasks, storage, false, ui);
             break;
         case "delete":
-            deleteTask(parsedCommand, tasks, storage);
+            deleteTask(parsedCommand, tasks, storage, ui);
             break;
         case "todo":
-            createTodoTask(taskDescription, tasks, storage);
+            createTodoTask(taskDescription, tasks, storage, ui);
             break;
         case "deadline":
-            createDeadlineTask(taskDescription, tasks, storage);
+            createDeadlineTask(taskDescription, tasks, storage, ui);
             break;
         case "event":
-            createEventTask(taskDescription, tasks, storage);
+            createEventTask(taskDescription, tasks, storage, ui);
             break;
         default:
             throw new DrPijonException("I DONT KNOW THAT COMMAND. Try: list, todo, deadline, event, mark, unmark, "
@@ -115,9 +115,10 @@ public class Main {
      * @param parsedCommand command and task number entered by the user
      * @param tasks stored tasks
      * @param storage task file storage
+     * @param ui console user interface
      * @throws DrPijonException when the task number is missing, invalid, or out of range
      */
-    private static void deleteTask(Parser.ParsedCommand parsedCommand, TaskList tasks, Storage storage)
+    private static void deleteTask(Parser.ParsedCommand parsedCommand, TaskList tasks, Storage storage, Ui ui)
             throws DrPijonException {
         if (parsedCommand.getArguments().isEmpty()) {
             throw new DrPijonException("BOOOOOOOO! Please specify a task number!");
@@ -136,14 +137,10 @@ public class Main {
 
         Task deletedTask = tasks.remove(taskNumber - 1);
         storage.save(tasks);
-        char typeMarker = deletedTask.getTaskType();
-        char statusMarker = deletedTask.isDone() ? 'X' : ' ';
-        System.out.println("COO COO! Task deleted:");
-        System.out.println(String.format("  [%c][%c] %s", typeMarker, statusMarker, deletedTask.getDescription()));
-        System.out.println(String.format("Now you have %d tasks in the list.", tasks.size()));
+        ui.showTaskDeleted(deletedTask, tasks.size());
     }
 
-    private static void createEventTask(String taskDescription, TaskList tasks, Storage storage)
+    private static void createEventTask(String taskDescription, TaskList tasks, Storage storage, Ui ui)
             throws DrPijonException {
         String[] eventParts = taskDescription.split("/from|/to", 3);
         if (eventParts.length < 3 || eventParts[0].isBlank() || eventParts[1].isBlank()
@@ -155,13 +152,10 @@ public class Main {
         Event event = new Event(eventParts[0].trim(), eventParts[1].trim(), eventParts[2].trim());
         tasks.add(event);
         storage.save(tasks);
-        System.out.println("HMMMMMMMMM ok, Event added:");
-        System.out.println(String.format("  [E][ ] %s (from: %s to: %s)", event.getDescription(),
-                event.getFrom(), event.getTo()));
-        System.out.println(String.format("Now you have %d tasks in the list.", tasks.size()));
+        ui.showTaskAdded(event, tasks.size());
     }
 
-    private static void createDeadlineTask(String taskDescription, TaskList tasks, Storage storage)
+    private static void createDeadlineTask(String taskDescription, TaskList tasks, Storage storage, Ui ui)
             throws DrPijonException {
         String[] deadlineParts = taskDescription.split("/by", 2);
         if (deadlineParts.length < 2 || deadlineParts[0].isBlank() || deadlineParts[1].isBlank()) {
@@ -171,12 +165,10 @@ public class Main {
         Deadline deadline = new Deadline(deadlineParts[0].trim(), deadlineParts[1].trim());
         tasks.add(deadline);
         storage.save(tasks);
-        System.out.println("HMMMMMMMMM ok, Deadline added:");
-        System.out.println(String.format("  [D][ ] %s (by: %s)", deadline.getDescription(), deadline.getBy()));
-        System.out.println(String.format("Now you have %d tasks in the list.", tasks.size()));
+        ui.showTaskAdded(deadline, tasks.size());
     }
 
-    private static void createTodoTask(String taskDescription, TaskList tasks, Storage storage)
+    private static void createTodoTask(String taskDescription, TaskList tasks, Storage storage, Ui ui)
             throws DrPijonException {
         if (taskDescription.isBlank()) {
             throw new DrPijonException("OI TODO DESCRIPTION CANT BE EMPTY >:( Try: todo read book");
@@ -185,9 +177,7 @@ public class Main {
         Todo todo = new Todo(taskDescription);
         tasks.add(todo);
         storage.save(tasks);
-        System.out.println("HMMMMMMMMM ok, Todo added:");
-        System.out.println(String.format("  [T][ ] %s", todo.getDescription()));
-        System.out.println(String.format("Now you have %d tasks in the list. ^w^", tasks.size()));
+        ui.showTaskAdded(todo, tasks.size());
     }
 
     /**
@@ -195,11 +185,12 @@ public class Main {
      *
      * @param parsedCommand command and task number entered by the user
      * @param tasks stored tasks
+     * @param storage task file storage
      * @param newDoneStatus done status to apply
-     * @param confirmationMessage message printed after a successful update
+     * @param ui console user interface
      */
     private static void updateTaskStatus(Parser.ParsedCommand parsedCommand, TaskList tasks, Storage storage,
-                                         boolean newDoneStatus, String confirmationMessage)
+                                         boolean newDoneStatus, Ui ui)
             throws DrPijonException {
         if (parsedCommand.getArguments().isEmpty()) {
             throw new DrPijonException("BOOOOOOOO! Please specify a task number!");
@@ -219,47 +210,11 @@ public class Main {
         Task selectedTask = tasks.get(taskNumber - 1);
         selectedTask.setDone(newDoneStatus);
         storage.save(tasks);
-        System.out.println(confirmationMessage);
-        char typeMarker = selectedTask.getTaskType();
-        char statusMarker = selectedTask.isDone() ? 'X' : ' ';
-        System.out.println(String.format("  [%c][%c] %s", typeMarker, statusMarker, selectedTask.getDescription()));
-    }
-
-    /**
-     * Prints all tasks and their current done status.
-     *
-     * @param tasks stored tasks
-     */
-    private static void printList(TaskList tasks) {
-        if (tasks.isEmpty()) {
-            System.out.println("BEHOLD! AN EMPTY LIST ^w^");
-            return;
+        if (newDoneStatus) {
+            ui.showTaskMarked(selectedTask);
+        } else {
+            ui.showTaskUnmarked(selectedTask);
         }
-        System.out.println("BEHOLD! Yummy list of tasks:");
-        for (int i = 0; i < tasks.size(); i++) {
-            Task task = tasks.get(i);
-            char typeMarker = task.getTaskType();
-            char statusMarker = task.isDone() ? 'X' : ' ';
-            String taskDescription = formatTaskDetails(task);
-            System.out.println(String.format("%d. [%c][%c] %s", i + 1, typeMarker, statusMarker, taskDescription));
-        }
-    }
-
-    /**
-     * Formats a task for display, including details specific to its task type.
-     *
-     * @param task task to format
-     * @return task description with deadline or event details when applicable
-     */
-    private static String formatTaskDetails(Task task) {
-        if (task instanceof Deadline deadline) {
-            return String.format("%s (by: %s)", deadline.getDescription(), deadline.getBy());
-        }
-        if (task instanceof Event event) {
-            return String.format("%s (from: %s to: %s)", event.getDescription(),
-                    event.getFrom(), event.getTo());
-        }
-        return task.getDescription();
     }
 
 }
