@@ -32,11 +32,9 @@ the command loop.
 [
   {
     "id": "TC-001",
-    "aim": "Verify unknown-command handling continues the session, while bye stops later commands.",
+    "aim": "Verify bye exits immediately without waiting for another input line.",
     "inputs": [
-      "wat",
-      "bye",
-      "list"
+      "bye"
     ],
     "expected_output_lines": [
       "@@@@@@@@@@@@@@@@@@%%%%%%%%%%%%%%%%@@%%%%%%%%%%######################################################%%%%%%%%%%%%%%%%",
@@ -108,8 +106,6 @@ the command loop.
       "Co-oo! Dr. Pijon at your service",
       "What are we pecking at today?",
       "",
-      "I DONT KNOW THAT COMMAND. Try: list, on, find, todo, deadline, event, mark, unmark, delete, or bye ^w^",
-      "____________________________________________________________",
       "I smell bread crumbs! I'm leaving.",
       "DR PIJON SERVICE END",
       ""

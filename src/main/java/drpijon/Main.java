@@ -57,7 +57,7 @@ public class Main {
      */
     private void runCommandLoop() {
         boolean isExit = false;
-        while (ui.hasNextLine() && !isExit) {
+        while (!isExit && ui.hasNextLine()) {
             try {
                 Command command = Parser.parse(ui.readLine());
                 isExit = command.isExit();
