@@ -32,10 +32,11 @@ the command loop.
 [
   {
     "id": "TC-001",
-    "aim": "Verify an unknown command raises DrPijonException, is reported centrally, and the session continues.",
+    "aim": "Verify unknown-command handling continues the session, while bye stops later commands.",
     "inputs": [
       "wat",
-      "bye"
+      "bye",
+      "list"
     ],
     "expected_output_lines": [
       "@@@@@@@@@@@@@@@@@@%%%%%%%%%%%%%%%%@@%%%%%%%%%%######################################################%%%%%%%%%%%%%%%%",
