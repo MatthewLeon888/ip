@@ -3,11 +3,8 @@ package drpijon.command;
 import drpijon.exception.DrPijonException;
 import drpijon.parser.Parser;
 import drpijon.storage.Storage;
-import drpijon.task.Deadline;
-import drpijon.task.Event;
 import drpijon.task.Task;
 import drpijon.task.TaskList;
-import drpijon.task.Todo;
 import drpijon.ui.Ui;
 
 /**
@@ -54,11 +51,10 @@ public class CommandHandler {
         switch (command) {
         case "bye":
             Command exitCommand = new ExitCommand();
-            exitCommand.execute(tasks, ui, storage);
+            executeCommand(exitCommand);
             return exitCommand.isExit();
         case "list":
-            Command listCommand = new ListCommand();
-            listCommand.execute(tasks, ui, storage);
+            executeCommand(new ListCommand());
             break;
         case "mark":
             updateTaskStatus(parsedCommand, true);
@@ -70,13 +66,13 @@ public class CommandHandler {
             deleteTask(parsedCommand);
             break;
         case "todo":
-            createTodoTask(taskDescription);
+            executeCommand(new TodoCommand(taskDescription));
             break;
         case "deadline":
-            createDeadlineTask(taskDescription);
+            executeCommand(new DeadlineCommand(taskDescription));
             break;
         case "event":
-            createEventTask(taskDescription);
+            executeCommand(new EventCommand(taskDescription));
             break;
         default:
             throw new DrPijonException("I DONT KNOW THAT COMMAND. Try: list, todo, deadline, event, mark, unmark, "
@@ -84,6 +80,10 @@ public class CommandHandler {
         }
         ui.showLineSeparator();
         return true;
+    }
+
+    private void executeCommand(Command command) throws DrPijonException {
+        command.execute(tasks, ui, storage);
     }
 
     /**
@@ -111,43 +111,6 @@ public class CommandHandler {
         Task deletedTask = tasks.remove(taskNumber - 1);
         storage.save(tasks);
         ui.showTaskDeleted(deletedTask, tasks.size());
-    }
-
-    private void createEventTask(String taskDescription) throws DrPijonException {
-        String[] eventParts = taskDescription.split("/from|/to", 3);
-        if (eventParts.length < 3 || eventParts[0].isBlank() || eventParts[1].isBlank()
-                || eventParts[2].isBlank()) {
-            throw new DrPijonException("OI EVENT MUST INCLUDE /from AND /to >:( Try: event career fest /from 14 Sep "
-                    + "/to 21 Sep");
-        }
-
-        Event event = new Event(eventParts[0].trim(), eventParts[1].trim(), eventParts[2].trim());
-        tasks.add(event);
-        storage.save(tasks);
-        ui.showTaskAdded(event, tasks.size());
-    }
-
-    private void createDeadlineTask(String taskDescription) throws DrPijonException {
-        String[] deadlineParts = taskDescription.split("/by", 2);
-        if (deadlineParts.length < 2 || deadlineParts[0].isBlank() || deadlineParts[1].isBlank()) {
-            throw new DrPijonException("OI DEADLINE MUST INCLUDE /by >:( Try: deadline return book /by Sunday");
-        }
-
-        Deadline deadline = new Deadline(deadlineParts[0].trim(), deadlineParts[1].trim());
-        tasks.add(deadline);
-        storage.save(tasks);
-        ui.showTaskAdded(deadline, tasks.size());
-    }
-
-    private void createTodoTask(String taskDescription) throws DrPijonException {
-        if (taskDescription.isBlank()) {
-            throw new DrPijonException("OI TODO DESCRIPTION CANT BE EMPTY >:( Try: todo read book");
-        }
-
-        Todo todo = new Todo(taskDescription);
-        tasks.add(todo);
-        storage.save(tasks);
-        ui.showTaskAdded(todo, tasks.size());
     }
 
     /**
