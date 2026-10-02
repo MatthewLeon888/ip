@@ -23,15 +23,10 @@ On Windows, use:
 .\gradlew.bat run
 ```
 
-### Running the packaged JAR
+### Building and running the packaged JAR
 
-Build the packaged JAR from the project root with:
-
-```text
-./gradlew shadowJar
-```
-
-On Windows, use:
+1. Open a command window in the project root.
+2. Build the packaged JAR with:
 
 ```text
 .\gradlew.bat shadowJar
@@ -39,11 +34,9 @@ On Windows, use:
 
 Gradle creates the JAR at `build/libs/drpijon.jar`.
 
-1. Copy `build/libs/drpijon.jar` into an empty folder.
-2. Open a command window in that folder.
-3. Run `java -jar "drpijon.jar"`.
-
-Run the command from the same folder as the JAR file.
+3. Copy `build/libs/drpijon.jar` into an empty folder.
+4. Open a command window in the folder containing the copied JAR file.
+5. Run `java -jar "drpijon.jar"`.
 
 Dr. Pijon greets you and waits for one command per line. Enter `bye` when you
 are finished.
