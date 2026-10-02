@@ -13,12 +13,22 @@ public class Todo extends Task {
         super(description);
     }
 
+    /**
+     * Returns a text representation including the done status.
+     *
+     * @return todo task representation
+     */
     @Override
     public String toString() {
         String status = this.isDone() ? "Yes" : "No";
         return super.toString() + System.lineSeparator() + "is done? " + status;
     }
 
+    /**
+     * Returns the marker used for todo tasks.
+     *
+     * @return todo task marker
+     */
     @Override
     public char getTaskType() {
         return 'T';

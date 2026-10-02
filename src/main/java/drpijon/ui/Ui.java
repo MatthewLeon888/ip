@@ -184,12 +184,23 @@ public class Ui {
         showTaskSummary(task);
     }
 
+    /**
+     * Displays the compact representation used by update confirmations.
+     *
+     * @param task task to summarize
+     */
     private void showTaskSummary(Task task) {
         char typeMarker = task.getTaskType();
         char statusMarker = task.isDone() ? 'X' : ' ';
         System.out.println(String.format("  [%c][%c] %s", typeMarker, statusMarker, task.getDescription()));
     }
 
+    /**
+     * Displays one numbered task using the full task details.
+     *
+     * @param task task to display
+     * @param displayIndex one-based index to display
+     */
     private void showTaskLine(Task task, int displayIndex) {
         char typeMarker = task.getTaskType();
         char statusMarker = task.isDone() ? 'X' : ' ';
@@ -197,6 +208,12 @@ public class Ui {
                 formatTaskDetails(task)));
     }
 
+    /**
+     * Formats type-specific details for a task display.
+     *
+     * @param task task whose details should be formatted
+     * @return formatted task details
+     */
     private String formatTaskDetails(Task task) {
         if (task instanceof Deadline deadline) {
             String by;
@@ -218,6 +235,15 @@ public class Ui {
         return task.getDescription();
     }
 
+    /**
+     * Formats one event boundary while preserving legacy free-text values.
+     *
+     * @param boundary parsed event boundary
+     * @param hasDate whether the boundary was parsed as a date
+     * @param hasTime whether the boundary includes an explicit time
+     * @param legacyText original free-text boundary
+     * @return formatted event boundary
+     */
     private String formatEventBoundary(LocalDateTime boundary, boolean hasDate, boolean hasTime, String legacyText) {
         if (!hasDate) {
             return legacyText;
@@ -225,6 +251,12 @@ public class Ui {
         return hasTime ? boundary.format(DISPLAY_DATE_TIME_FORMAT) : boundary.format(DISPLAY_DATE_FORMAT);
     }
 
+    /**
+     * Returns the user-facing name for a task type.
+     *
+     * @param task task whose type should be named
+     * @return user-facing task type name
+     */
     private String getTaskTypeName(Task task) {
         if (task instanceof Todo) {
             return "Todo";

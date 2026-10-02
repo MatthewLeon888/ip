@@ -112,11 +112,21 @@ public class Deadline extends Task {
         return DateTimeParser.formatForStorage(by, hasTime);
     }
 
+    /**
+     * Returns a text representation including the deadline.
+     *
+     * @return deadline task representation
+     */
     @Override
     public String toString() {
         return super.toString() + System.lineSeparator() + "do by: " + getByText();
     }
 
+    /**
+     * Returns the marker used for deadline tasks.
+     *
+     * @return deadline task marker
+     */
     @Override
     public char getTaskType() {
         return 'D';

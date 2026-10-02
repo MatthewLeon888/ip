@@ -21,6 +21,14 @@ public class DeadlineCommand extends AddCommand {
         super(description);
     }
 
+    /**
+     * Creates, saves, and displays a deadline task.
+     *
+     * @param tasks task list to update
+     * @param ui user interface used for the response
+     * @param storage storage used to persist the new task
+     * @throws DrPijonException when the deadline format is invalid or saving fails
+     */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws DrPijonException {
         String[] deadlineParts = getDescription().split("/by", 2);

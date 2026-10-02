@@ -19,6 +19,14 @@ public class TodoCommand extends AddCommand {
         super(description);
     }
 
+    /**
+     * Creates, saves, and displays a todo task.
+     *
+     * @param tasks task list to update
+     * @param ui user interface used for the response
+     * @param storage storage used to persist the new task
+     * @throws DrPijonException when the description is missing or saving fails
+     */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws DrPijonException {
         if (getDescription().isBlank()) {

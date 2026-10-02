@@ -19,6 +19,11 @@ public class Task {
         this.isDone = false;
     }
 
+    /**
+     * Returns this task's description.
+     *
+     * @return task description
+     */
     public String getDescription() {
         return description;
     }
@@ -51,11 +56,21 @@ public class Task {
         return false;
     }
     
+    /**
+     * Returns a text representation of this task.
+     *
+     * @return task description representation
+     */
     @Override
     public String toString() {
         return "description: " + description;
     }
 
+    /**
+     * Returns the marker used to identify this task type.
+     *
+     * @return task type marker, or a blank marker for a base task
+     */
     public char getTaskType() {
         return ' ';
     }

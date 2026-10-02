@@ -10,6 +10,12 @@ import drpijon.ui.Ui;
  */
 public abstract class Command {
     /**
+     * Creates an executable command.
+     */
+    protected Command() {
+    }
+
+    /**
      * Executes this command using the application's components.
      *
      * @param tasks task list to read or update

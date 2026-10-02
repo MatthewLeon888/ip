@@ -15,6 +15,9 @@ public final class DateTimeParser {
     private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm")
             .withResolverStyle(ResolverStyle.STRICT);
 
+    /**
+     * Prevents construction of this utility class.
+     */
     private DateTimeParser() {
     }
 
@@ -66,6 +69,12 @@ public final class DateTimeParser {
         return hasTime ? value.format(DATE_TIME_FORMAT) : value.toLocalDate().toString();
     }
 
+    /**
+     * Trims input and collapses repeated whitespace for consistent parsing.
+     *
+     * @param text raw date or date-time text
+     * @return normalized text
+     */
     private static String normalize(String text) {
         return text.trim().replaceAll("\\s+", " ");
     }

@@ -99,6 +99,11 @@ public class TaskList implements Iterable<Task> {
         return matchingTasks;
     }
 
+    /**
+     * Returns an iterator over tasks in their current order.
+     *
+     * @return task iterator
+     */
     @Override
     public Iterator<Task> iterator() {
         return tasks.iterator();

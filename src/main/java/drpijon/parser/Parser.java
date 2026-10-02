@@ -18,6 +18,12 @@ import drpijon.exception.DrPijonException;
  */
 public class Parser {
     /**
+     * Creates a parser.
+     */
+    public Parser() {
+    }
+
+    /**
      * Parses one line of console input.
      *
      * @param inputLine raw console input

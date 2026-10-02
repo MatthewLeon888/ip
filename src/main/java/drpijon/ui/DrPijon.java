@@ -81,6 +81,12 @@ public class DrPijon {
             """;
 
     /**
+     * Creates the application's fixed user-facing messages.
+     */
+    public DrPijon() {
+    }
+
+    /**
      * Returns the application banner.
      *
      * @return application banner

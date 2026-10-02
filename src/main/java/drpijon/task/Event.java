@@ -153,6 +153,11 @@ public class Event extends Task {
         return hasToDate() ? DateTimeParser.formatForStorage(to, hasToTime) : legacyTo;
     }
 
+    /**
+     * Returns the marker used for event tasks.
+     *
+     * @return event task marker
+     */
     @Override
     public char getTaskType() {
         return 'E';

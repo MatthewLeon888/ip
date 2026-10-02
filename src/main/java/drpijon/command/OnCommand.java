@@ -24,6 +24,14 @@ public class OnCommand extends Command {
         this.arguments = arguments;
     }
 
+    /**
+     * Displays deadlines and events occurring on the requested date.
+     *
+     * @param tasks task list to search
+     * @param ui user interface used for the response
+     * @param storage storage, which is not modified
+     * @throws DrPijonException when the date is missing or invalid
+     */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws DrPijonException {
         if (arguments.isBlank()) {
