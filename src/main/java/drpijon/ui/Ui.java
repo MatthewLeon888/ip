@@ -1,5 +1,6 @@
 package drpijon.ui;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Scanner;
@@ -167,9 +168,19 @@ public class Ui {
             return String.format("%s (by: %s)", deadline.getDescription(), by);
         }
         if (task instanceof Event event) {
-            return String.format("%s (from: %s to: %s)", event.getDescription(), event.getFrom(), event.getTo());
+            String from = formatEventBoundary(event.getFrom(), event.hasFromDate(), event.hasFromTime(),
+                    event.getFromText());
+            String to = formatEventBoundary(event.getTo(), event.hasToDate(), event.hasToTime(), event.getToText());
+            return String.format("%s (from: %s to: %s)", event.getDescription(), from, to);
         }
         return task.getDescription();
+    }
+
+    private String formatEventBoundary(LocalDateTime boundary, boolean hasDate, boolean hasTime, String legacyText) {
+        if (!hasDate) {
+            return legacyText;
+        }
+        return hasTime ? boundary.format(DISPLAY_DATE_TIME_FORMAT) : boundary.format(DISPLAY_DATE_FORMAT);
     }
 
     private String getTaskTypeName(Task task) {

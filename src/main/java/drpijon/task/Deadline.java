@@ -2,17 +2,12 @@ package drpijon.task;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.format.ResolverStyle;
 
 /**
  * Represents a task with a deadline.
  */
 public class Deadline extends Task {
-    private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm")
-            .withResolverStyle(ResolverStyle.STRICT);
-
     private final LocalDateTime by;
     private final boolean hasTime;
     private final String legacyBy;
@@ -52,11 +47,7 @@ public class Deadline extends Task {
      * @throws DateTimeParseException when the text is neither a supported date nor date-time
      */
     public static Deadline fromText(String description, String by) throws DateTimeParseException {
-        try {
-            return new Deadline(description, LocalDateTime.parse(by, DATE_TIME_FORMAT));
-        } catch (DateTimeParseException e) {
-            return new Deadline(description, LocalDate.parse(by));
-        }
+        return new Deadline(description, DateTimeParser.parse(by), DateTimeParser.hasTime(by), null);
     }
 
     /**
@@ -113,7 +104,7 @@ public class Deadline extends Task {
         if (!hasDate()) {
             return legacyBy;
         }
-        return hasTime ? by.format(DATE_TIME_FORMAT) : by.toLocalDate().toString();
+        return DateTimeParser.formatForStorage(by, hasTime);
     }
 
     @Override

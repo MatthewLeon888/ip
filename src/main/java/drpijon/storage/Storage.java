@@ -91,7 +91,7 @@ public class Storage {
             return taskLine + String.format(" | %s", deadline.getByText());
         }
         if (task instanceof Event event) {
-            return taskLine + String.format(" | %s | %s", event.getFrom(), event.getTo());
+            return taskLine + String.format(" | %s | %s", event.getFromText(), event.getToText());
         }
         return taskLine;
     }
@@ -120,7 +120,7 @@ public class Storage {
                 task = parseDeadline(taskParts[2], taskParts[3]);
                 break;
             case "E":
-                task = new Event(taskParts[2], taskParts[3], taskParts[4]);
+                task = parseEvent(taskParts[2], taskParts[3], taskParts[4]);
                 break;
             default:
                 throw createLoadException();
@@ -144,6 +144,22 @@ public class Storage {
             return Deadline.fromText(description, by);
         } catch (DateTimeParseException e) {
             return Deadline.fromLegacy(description, by);
+        }
+    }
+
+    /**
+     * Parses a typed event while preserving events from the older text format.
+     *
+     * @param description event description
+     * @param from event start date, date-time, or legacy text
+     * @param to event end date, date-time, or legacy text
+     * @return reconstructed event
+     */
+    private Event parseEvent(String description, String from, String to) {
+        try {
+            return Event.fromText(description, from, to);
+        } catch (DateTimeParseException e) {
+            return Event.fromLegacy(description, from, to);
         }
     }
 
