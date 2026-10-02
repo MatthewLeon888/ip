@@ -25,19 +25,23 @@ On Windows, use:
 
 ### Running the packaged JAR
 
-1. Copy the JAR file into an empty folder.
+Build the packaged JAR from the project root with:
+
+```text
+./gradlew shadowJar
+```
+
+On Windows, use:
+
+```text
+.\gradlew.bat shadowJar
+```
+
+Gradle creates the JAR at `build/libs/drpijon.jar`.
+
+1. Copy `build/libs/drpijon.jar` into an empty folder.
 2. Open a command window in that folder.
-3. Run the command below, replacing `{filename}` with the JAR filename:
-
-```text
-java -jar "{filename}.jar"
-```
-
-For example:
-
-```text
-java -jar "Duke.jar"
-```
+3. Run `java -jar "drpijon.jar"`.
 
 Run the command from the same folder as the JAR file.
 
