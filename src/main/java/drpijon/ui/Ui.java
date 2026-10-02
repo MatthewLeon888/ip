@@ -1,18 +1,27 @@
 package drpijon.ui;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Locale;
+import java.util.Scanner;
+
 import drpijon.task.Deadline;
 import drpijon.task.Event;
 import drpijon.task.Task;
 import drpijon.task.TaskList;
 import drpijon.task.Todo;
 
-import java.util.Scanner;
-
 /**
  * Handles console input and common user-facing messages.
  */
 public class Ui {
     private static final String LINE_SEPARATOR = "____________________________________________________________";
+    private static final DateTimeFormatter DISPLAY_DATE_FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy",
+            Locale.ENGLISH);
+    private static final DateTimeFormatter DISPLAY_DATE_TIME_FORMAT = DateTimeFormatter.ofPattern(
+            "MMM dd yyyy, h:mm a", Locale.ENGLISH);
 
     private final DrPijon messages;
     private final Scanner scanner;
@@ -87,11 +96,26 @@ public class Ui {
 
         System.out.println("BEHOLD! Yummy list of tasks:");
         for (int i = 0; i < tasks.size(); i++) {
-            Task task = tasks.get(i);
-            char typeMarker = task.getTaskType();
-            char statusMarker = task.isDone() ? 'X' : ' ';
-            System.out.println(String.format("%d. [%c][%c] %s", i + 1, typeMarker, statusMarker,
-                    formatTaskDetails(task)));
+            showTaskLine(tasks.get(i), i + 1);
+        }
+    }
+
+    /**
+     * Displays deadlines and events occurring on a specific date.
+     *
+     * @param tasks matching tasks to display
+     * @param date date used for the lookup
+     */
+    public void showTasksOnDate(List<Task> tasks, LocalDate date) {
+        String formattedDate = date.format(DISPLAY_DATE_FORMAT);
+        if (tasks.isEmpty()) {
+            System.out.println(String.format("BEHOLD! NO TASKS ON %s ^w^", formattedDate));
+            return;
+        }
+
+        System.out.println(String.format("BEHOLD! Tasks on %s:", formattedDate));
+        for (int i = 0; i < tasks.size(); i++) {
+            showTaskLine(tasks.get(i), i + 1);
         }
     }
 
@@ -148,14 +172,39 @@ public class Ui {
         System.out.println(String.format("  [%c][%c] %s", typeMarker, statusMarker, task.getDescription()));
     }
 
+    private void showTaskLine(Task task, int displayIndex) {
+        char typeMarker = task.getTaskType();
+        char statusMarker = task.isDone() ? 'X' : ' ';
+        System.out.println(String.format("%d. [%c][%c] %s", displayIndex, typeMarker, statusMarker,
+                formatTaskDetails(task)));
+    }
+
     private String formatTaskDetails(Task task) {
         if (task instanceof Deadline deadline) {
-            return String.format("%s (by: %s)", deadline.getDescription(), deadline.getBy());
+            String by;
+            if (!deadline.hasDate()) {
+                by = deadline.getByText();
+            } else if (deadline.hasTime()) {
+                by = deadline.getBy().format(DISPLAY_DATE_TIME_FORMAT);
+            } else {
+                by = deadline.getBy().format(DISPLAY_DATE_FORMAT);
+            }
+            return String.format("%s (by: %s)", deadline.getDescription(), by);
         }
         if (task instanceof Event event) {
-            return String.format("%s (from: %s to: %s)", event.getDescription(), event.getFrom(), event.getTo());
+            String from = formatEventBoundary(event.getFrom(), event.hasFromDate(), event.hasFromTime(),
+                    event.getFromText());
+            String to = formatEventBoundary(event.getTo(), event.hasToDate(), event.hasToTime(), event.getToText());
+            return String.format("%s (from: %s to: %s)", event.getDescription(), from, to);
         }
         return task.getDescription();
+    }
+
+    private String formatEventBoundary(LocalDateTime boundary, boolean hasDate, boolean hasTime, String legacyText) {
+        if (!hasDate) {
+            return legacyText;
+        }
+        return hasTime ? boundary.format(DISPLAY_DATE_TIME_FORMAT) : boundary.format(DISPLAY_DATE_FORMAT);
     }
 
     private String getTaskTypeName(Task task) {

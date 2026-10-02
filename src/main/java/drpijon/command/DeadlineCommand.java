@@ -1,5 +1,7 @@
 package drpijon.command;
 
+import java.time.format.DateTimeParseException;
+
 import drpijon.exception.DrPijonException;
 import drpijon.storage.Storage;
 import drpijon.task.Deadline;
@@ -23,10 +25,18 @@ public class DeadlineCommand extends AddCommand {
     public void execute(TaskList tasks, Ui ui, Storage storage) throws DrPijonException {
         String[] deadlineParts = getDescription().split("/by", 2);
         if (deadlineParts.length < 2 || deadlineParts[0].isBlank() || deadlineParts[1].isBlank()) {
-            throw new DrPijonException("OI DEADLINE MUST INCLUDE /by >:( Try: deadline return book /by Sunday");
+            throw new DrPijonException("OI DEADLINE MUST INCLUDE /by >:( Try: deadline return book /by "
+                    + "2019-10-15 1800");
         }
 
-        Deadline deadline = new Deadline(deadlineParts[0].trim(), deadlineParts[1].trim());
+        Deadline deadline;
+        try {
+            deadline = Deadline.fromText(deadlineParts[0].trim(), deadlineParts[1].trim());
+        } catch (DateTimeParseException e) {
+            throw new DrPijonException("OI DEADLINE DATE/TIME MUST USE yyyy-MM-dd or yyyy-MM-dd HHmm >:( Try: "
+                    + "deadline return book /by 2019-10-15 1800");
+        }
+
         addTask(deadline, tasks, ui, storage);
     }
 }

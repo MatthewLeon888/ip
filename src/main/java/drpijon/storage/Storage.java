@@ -1,19 +1,20 @@
 package drpijon.storage;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
+
 import drpijon.exception.DrPijonException;
 import drpijon.task.Deadline;
 import drpijon.task.Event;
 import drpijon.task.Task;
 import drpijon.task.TaskList;
 import drpijon.task.Todo;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Loads tasks from and saves tasks to the application's task file.
@@ -87,10 +88,10 @@ public class Storage {
         String taskLine = String.format("%c | %d | %s", task.getTaskType(), task.isDone() ? 1 : 0,
                 task.getDescription());
         if (task instanceof Deadline deadline) {
-            return taskLine + String.format(" | %s", deadline.getBy());
+            return taskLine + String.format(" | %s", deadline.getByText());
         }
         if (task instanceof Event event) {
-            return taskLine + String.format(" | %s | %s", event.getFrom(), event.getTo());
+            return taskLine + String.format(" | %s | %s", event.getFromText(), event.getToText());
         }
         return taskLine;
     }
@@ -116,10 +117,10 @@ public class Storage {
                 task = new Todo(taskParts[2]);
                 break;
             case "D":
-                task = new Deadline(taskParts[2], taskParts[3]);
+                task = parseDeadline(taskParts[2], taskParts[3]);
                 break;
             case "E":
-                task = new Event(taskParts[2], taskParts[3], taskParts[4]);
+                task = parseEvent(taskParts[2], taskParts[3], taskParts[4]);
                 break;
             default:
                 throw createLoadException();
@@ -128,6 +129,37 @@ public class Storage {
             return task;
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
             throw createLoadException();
+        }
+    }
+
+    /**
+     * Parses a typed deadline while preserving deadlines from the older text format.
+     *
+     * @param description deadline description
+     * @param by deadline date or legacy text
+     * @return reconstructed deadline
+     */
+    private Deadline parseDeadline(String description, String by) {
+        try {
+            return Deadline.fromText(description, by);
+        } catch (DateTimeParseException e) {
+            return Deadline.fromLegacy(description, by);
+        }
+    }
+
+    /**
+     * Parses a typed event while preserving events from the older text format.
+     *
+     * @param description event description
+     * @param from event start date, date-time, or legacy text
+     * @param to event end date, date-time, or legacy text
+     * @return reconstructed event
+     */
+    private Event parseEvent(String description, String from, String to) {
+        try {
+            return Event.fromText(description, from, to);
+        } catch (DateTimeParseException e) {
+            return Event.fromLegacy(description, from, to);
         }
     }
 

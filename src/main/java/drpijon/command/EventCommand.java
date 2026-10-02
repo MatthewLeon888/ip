@@ -1,5 +1,7 @@
 package drpijon.command;
 
+import java.time.format.DateTimeParseException;
+
 import drpijon.exception.DrPijonException;
 import drpijon.storage.Storage;
 import drpijon.task.Event;
@@ -28,7 +30,12 @@ public class EventCommand extends AddCommand {
                     + "/to 21 Sep");
         }
 
-        Event event = new Event(eventParts[0].trim(), eventParts[1].trim(), eventParts[2].trim());
+        Event event;
+        try {
+            event = Event.fromText(eventParts[0].trim(), eventParts[1].trim(), eventParts[2].trim());
+        } catch (DateTimeParseException e) {
+            event = Event.fromLegacy(eventParts[0].trim(), eventParts[1].trim(), eventParts[2].trim());
+        }
         addTask(event, tasks, ui, storage);
     }
 }
