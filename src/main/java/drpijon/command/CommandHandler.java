@@ -1,7 +1,6 @@
 package drpijon.command;
 
 import drpijon.exception.DrPijonException;
-import drpijon.parser.Parser;
 import drpijon.storage.Storage;
 import drpijon.task.TaskList;
 import drpijon.ui.Ui;
@@ -28,61 +27,21 @@ public class CommandHandler {
     }
 
     /**
-     * Executes a parsed command and displays any command error.
+     * Executes a command and displays any execution error.
      *
-     * @param parsedCommand parsed command and arguments
-     * @return false when the user requested exit
+     * @param command command to execute
+     * @return false when the command requests application exit
      */
-    public boolean execute(Parser.ParsedCommand parsedCommand) {
+    public boolean execute(Command command) {
         try {
-            return processCommand(parsedCommand);
+            command.execute(tasks, ui, storage);
         } catch (DrPijonException e) {
             ui.showError(e.getMessage());
+        }
+        if (!command.isExit()) {
             ui.showLineSeparator();
-            return true;
         }
-    }
-
-    private boolean processCommand(Parser.ParsedCommand parsedCommand) throws DrPijonException {
-        String command = parsedCommand.getCommand();
-        String taskDescription = parsedCommand.getArguments();
-
-        switch (command) {
-        case "bye":
-            Command exitCommand = new ExitCommand();
-            executeCommand(exitCommand);
-            return exitCommand.isExit();
-        case "list":
-            executeCommand(new ListCommand());
-            break;
-        case "mark":
-            executeCommand(new MarkCommand(taskDescription));
-            break;
-        case "unmark":
-            executeCommand(new UnmarkCommand(taskDescription));
-            break;
-        case "delete":
-            executeCommand(new DeleteCommand(taskDescription));
-            break;
-        case "todo":
-            executeCommand(new TodoCommand(taskDescription));
-            break;
-        case "deadline":
-            executeCommand(new DeadlineCommand(taskDescription));
-            break;
-        case "event":
-            executeCommand(new EventCommand(taskDescription));
-            break;
-        default:
-            throw new DrPijonException("I DONT KNOW THAT COMMAND. Try: list, todo, deadline, event, mark, unmark, "
-                    + "delete, or bye ^w^");
-        }
-        ui.showLineSeparator();
-        return true;
-    }
-
-    private void executeCommand(Command command) throws DrPijonException {
-        command.execute(tasks, ui, storage);
+        return !command.isExit();
     }
 
 }

@@ -1,5 +1,6 @@
 package drpijon;
 
+import drpijon.command.Command;
 import drpijon.command.CommandHandler;
 import drpijon.exception.DrPijonException;
 import drpijon.parser.Parser;
@@ -14,7 +15,6 @@ public class Main {
     private static final String TASK_FILE_PATH = "data/drpijon.txt";
     private final Ui ui;
     private final Storage storage;
-    private final Parser parser;
     private final CommandHandler commandHandler;
 
     /**
@@ -25,7 +25,6 @@ public class Main {
     public Main(String filePath) {
         ui = new Ui();
         storage = new Storage(filePath);
-        parser = new Parser();
 
         TaskList loadedTasks;
         try {
@@ -59,9 +58,14 @@ public class Main {
      */
     private void runCommandLoop() {
         while (ui.hasNextLine()) {
-            Parser.ParsedCommand parsedCommand = parser.parse(ui.readLine());
-            if (!commandHandler.execute(parsedCommand)) {
-                return;
+            try {
+                Command command = Parser.parse(ui.readLine());
+                if (!commandHandler.execute(command)) {
+                    return;
+                }
+            } catch (DrPijonException e) {
+                ui.showError(e.getMessage());
+                ui.showLineSeparator();
             }
         }
     }

@@ -1,5 +1,16 @@
 package drpijon.parser;
 
+import drpijon.command.Command;
+import drpijon.command.DeadlineCommand;
+import drpijon.command.DeleteCommand;
+import drpijon.command.EventCommand;
+import drpijon.command.ExitCommand;
+import drpijon.command.ListCommand;
+import drpijon.command.MarkCommand;
+import drpijon.command.TodoCommand;
+import drpijon.command.UnmarkCommand;
+import drpijon.exception.DrPijonException;
+
 /**
  * Interprets raw console input as a command and its arguments.
  */
@@ -8,39 +19,34 @@ public class Parser {
      * Parses one line of console input.
      *
      * @param inputLine raw console input
-     * @return parsed command and arguments
+     * @return executable command represented by the input
+     * @throws DrPijonException when the command keyword is not recognized
      */
-    public ParsedCommand parse(String inputLine) {
+    public static Command parse(String inputLine) throws DrPijonException {
         String[] inputParts = inputLine.trim().split("\\s+", 2);
         String command = inputParts[0];
         String arguments = inputParts.length > 1 ? inputParts[1] : "";
-        return new ParsedCommand(command, arguments);
-    }
 
-    /**
-     * Represents a command keyword and the text entered after it.
-     */
-    public static final class ParsedCommand {
-        private final String command;
-        private final String arguments;
-
-        /**
-         * Creates a parsed command.
-         *
-         * @param command command keyword
-         * @param arguments text following the command keyword
-         */
-        public ParsedCommand(String command, String arguments) {
-            this.command = command;
-            this.arguments = arguments;
-        }
-
-        public String getCommand() {
-            return command;
-        }
-
-        public String getArguments() {
-            return arguments;
+        switch (command) {
+        case "bye":
+            return new ExitCommand();
+        case "list":
+            return new ListCommand();
+        case "mark":
+            return new MarkCommand(arguments);
+        case "unmark":
+            return new UnmarkCommand(arguments);
+        case "delete":
+            return new DeleteCommand(arguments);
+        case "todo":
+            return new TodoCommand(arguments);
+        case "deadline":
+            return new DeadlineCommand(arguments);
+        case "event":
+            return new EventCommand(arguments);
+        default:
+            throw new DrPijonException("I DONT KNOW THAT COMMAND. Try: list, todo, deadline, event, mark, unmark, "
+                    + "delete, or bye ^w^");
         }
     }
 }
