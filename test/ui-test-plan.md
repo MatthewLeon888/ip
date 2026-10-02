@@ -201,9 +201,9 @@ the command loop.
   },
   {
     "id": "TC-003",
-    "aim": "Verify malformed deadline input raises DrPijonException and does not add a task.",
+    "aim": "Verify a non-ISO deadline date raises DrPijonException and does not add a task.",
     "inputs": [
-      "deadline return book",
+      "deadline return book /by Sunday",
       "bye"
     ],
     "expected_output_lines": [
@@ -276,7 +276,7 @@ the command loop.
       "Co-oo! Dr. Pijon at your service",
       "What are we pecking at today?",
       "",
-      "OI DEADLINE MUST INCLUDE /by >:( Try: deadline return book /by Sunday",
+      "OI DEADLINE DATE MUST USE yyyy-MM-dd >:( Try: deadline return book /by 2019-10-15",
       "____________________________________________________________",
       "I smell bread crumbs! I'm leaving.",
       "DR PIJON SERVICE END",
@@ -394,7 +394,7 @@ the command loop.
       "todo read book",
       "mark 1",
       "unmark 1",
-      "deadline return book /by Sunday",
+      "deadline return book /by 2019-10-15",
       "event project meeting /from Aug 6 /to 2-4pm",
       "list",
       "bye"
@@ -480,7 +480,7 @@ the command loop.
       "  [T][ ] read book",
       "____________________________________________________________",
       "HMMMMMMMMM ok, Deadline added:",
-      "  [D][ ] return book (by: Sunday)",
+      "  [D][ ] return book (by: Oct 15 2019)",
       "Now you have 2 tasks in the list.",
       "____________________________________________________________",
       "HMMMMMMMMM ok, Event added:",
@@ -489,7 +489,7 @@ the command loop.
       "____________________________________________________________",
       "BEHOLD! Yummy list of tasks:",
       "1. [T][ ] read book",
-      "2. [D][ ] return book (by: Sunday)",
+      "2. [D][ ] return book (by: Oct 15 2019)",
       "3. [E][ ] project meeting (from: Aug 6 to: 2-4pm)",
       "____________________________________________________________",
       "I smell bread crumbs! I'm leaving.",
@@ -580,7 +580,7 @@ the command loop.
       "",
       "BEHOLD! Yummy list of tasks:",
       "1. [T][ ] read book",
-      "2. [D][ ] return book (by: Sunday)",
+      "2. [D][ ] return book (by: Oct 15 2019)",
       "3. [E][ ] project meeting (from: Aug 6 to: 2-4pm)",
       "____________________________________________________________",
       "COO COO! Task deleted:",

@@ -1,18 +1,22 @@
 package drpijon.ui;
 
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+import java.util.Scanner;
+
 import drpijon.task.Deadline;
 import drpijon.task.Event;
 import drpijon.task.Task;
 import drpijon.task.TaskList;
 import drpijon.task.Todo;
 
-import java.util.Scanner;
-
 /**
  * Handles console input and common user-facing messages.
  */
 public class Ui {
     private static final String LINE_SEPARATOR = "____________________________________________________________";
+    private static final DateTimeFormatter DISPLAY_DATE_FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy",
+            Locale.ENGLISH);
 
     private final DrPijon messages;
     private final Scanner scanner;
@@ -150,7 +154,8 @@ public class Ui {
 
     private String formatTaskDetails(Task task) {
         if (task instanceof Deadline deadline) {
-            return String.format("%s (by: %s)", deadline.getDescription(), deadline.getBy());
+            String by = deadline.hasDate() ? deadline.getBy().format(DISPLAY_DATE_FORMAT) : deadline.getByText();
+            return String.format("%s (by: %s)", deadline.getDescription(), by);
         }
         if (task instanceof Event event) {
             return String.format("%s (from: %s to: %s)", event.getDescription(), event.getFrom(), event.getTo());
